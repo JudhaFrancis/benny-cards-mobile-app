@@ -10,10 +10,15 @@ import {
   setupIonicReact
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { ellipse, square, triangle } from 'ionicons/icons';
-import Tab1 from './pages/Tab1';
-import Tab2 from './pages/Tab2';
-import Tab3 from './pages/Tab3';
+import { 
+  gridOutline, 
+  receiptOutline, 
+  layersOutline 
+} from 'ionicons/icons';
+import Dashboard from './pages/Dashboard';
+import Orders from './pages/Orders';
+import Management from './pages/Management';
+import Login from './pages/Login';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -52,31 +57,34 @@ const App: React.FC = () => (
     <IonReactRouter>
       <IonTabs>
         <IonRouterOutlet>
-          <Route exact path="/tab1">
-            <Tab1 />
+          <Route exact path="/login">
+            <Login />
           </Route>
-          <Route exact path="/tab2">
-            <Tab2 />
+          <Route exact path="/dashboard">
+            {localStorage.getItem('auth_token') ? <Dashboard /> : <Redirect to="/login" />}
           </Route>
-          <Route path="/tab3">
-            <Tab3 />
+          <Route exact path="/orders">
+            {localStorage.getItem('auth_token') ? <Orders /> : <Redirect to="/login" />}
+          </Route>
+          <Route path="/management">
+            {localStorage.getItem('auth_token') ? <Management /> : <Redirect to="/login" />}
           </Route>
           <Route exact path="/">
-            <Redirect to="/tab1" />
+            <Redirect to="/dashboard" />
           </Route>
         </IonRouterOutlet>
         <IonTabBar slot="bottom">
-          <IonTabButton tab="tab1" href="/tab1">
-            <IonIcon aria-hidden="true" icon={triangle} />
-            <IonLabel>Tab 1</IonLabel>
+          <IonTabButton tab="dashboard" href="/dashboard">
+            <IonIcon aria-hidden="true" icon={gridOutline} />
+            <IonLabel>Dashboard</IonLabel>
           </IonTabButton>
-          <IonTabButton tab="tab2" href="/tab2">
-            <IonIcon aria-hidden="true" icon={ellipse} />
-            <IonLabel>Tab 2</IonLabel>
+          <IonTabButton tab="orders" href="/orders">
+            <IonIcon aria-hidden="true" icon={receiptOutline} />
+            <IonLabel>Orders</IonLabel>
           </IonTabButton>
-          <IonTabButton tab="tab3" href="/tab3">
-            <IonIcon aria-hidden="true" icon={square} />
-            <IonLabel>Tab 3</IonLabel>
+          <IonTabButton tab="management" href="/management">
+            <IonIcon aria-hidden="true" icon={layersOutline} />
+            <IonLabel>Management</IonLabel>
           </IonTabButton>
         </IonTabBar>
       </IonTabs>
