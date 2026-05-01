@@ -14,8 +14,10 @@ import {
   trendingDownOutline,
   fastFoodOutline,
   cartOutline,
-  airplaneOutline
+  airplaneOutline,
+  sparkles
 } from 'ionicons/icons';
+import { motion } from 'framer-motion';
 import { API_URL } from '../api/config';
 import './Tab1.css';
 
@@ -30,7 +32,17 @@ const Tab1: React.FC = () => {
           <div className="header-section">
             <div className="welcome-text">
               <p>Welcome back,</p>
-              <h2>Benny</h2>
+              <div className="flex items-center gap-2">
+                <h2 className="text-2xl font-bold">Benny</h2>
+                <motion.div
+                  initial={{ scale: 0, rotate: -45 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                  className="bg-gradient-to-r from-yellow-400 to-orange-500 p-1 rounded-full shadow-lg"
+                >
+                  <IonIcon icon={sparkles} className="text-white text-xs block" />
+                </motion.div>
+              </div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
               <div className="icon-badge" style={{ fontSize: '24px', color: '#666' }}>
