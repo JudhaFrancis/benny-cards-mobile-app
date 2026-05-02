@@ -1,27 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   IonContent,
-  IonHeader,
   IonPage,
-  IonTitle,
-  IonToolbar,
-  IonInput,
-  IonItem,
-  IonLabel,
-  IonButton,
-  IonText,
   IonLoading,
 } from '@ionic/react';
-import { LogIn, Mail, Lock } from 'lucide-react';
+import { LogIn, Mail, Lock, AlertCircle, ArrowRight } from 'lucide-react';
 import api from '../api/api';
 import { useHistory } from 'react-router-dom';
+import './Login.css';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [companyLogo, setCompanyLogo] = useState<string | null>(null);
+  const [companyName, setCompanyName] = useState<string | null>(null);
   const history = useHistory();
+
+  const fetchLogo = async () => {
+    try {
+      const response = await api.get('/settings/logo');
+      if (response.data.success && response.data.data) {
+        setCompanyLogo(response.data.data.logo);
+        setCompanyName(response.data.data.company_name);
+      }
+    } catch (e) {
+      console.error('Login: Failed to fetch logo', e);
+    }
+  };
+
+  useEffect(() => {
+    fetchLogo();
+  }, []);
+
+  const getImageSource = (path: string) => {
+    if (!path) return '';
+    if (path.startsWith('data:image') || path.startsWith('http')) return path;
+    const baseUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:8000';
+    return `${baseUrl}/${path}`;
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,14 +47,22 @@ const Login: React.FC = () => {
     setError('');
 
     try {
+      const baseUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:8000';
+      await api.get(`${baseUrl}/sanctum/csrf-cookie`, { baseURL: '' });
+      
       const response = await api.post('/login', { email, password });
+      
       if (response.data.success) {
         localStorage.setItem('auth_token', response.data.data.token);
         localStorage.setItem('auth_user', JSON.stringify(response.data.data.user));
         history.push('/dashboard');
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      if (err.response?.status === 401) {
+        setError('Invalid credentials. Please verify your email and password.');
+      } else {
+        setError(err.response?.data?.message || 'Connection lost. Please check your internet and try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -44,25 +70,43 @@ const Login: React.FC = () => {
 
   return (
     <IonPage>
-      <IonContent fullscreen className="ion-padding bg-slate-50">
-        <div className="flex flex-col justify-center min-h-full max-w-md mx-auto space-y-12 py-12">
-          <div className="text-center space-y-4">
-            <div className="inline-flex p-4 bg-indigo-600 rounded-[2rem] text-white shadow-xl shadow-indigo-600/20">
-              <LogIn size={32} />
+      <IonContent fullscreen className="ion-padding login-content">
+        <div className="login-container space-y-10 py-12">
+          
+          {/* Brand Header */}
+          <div className="text-center space-y-6">
+            <div className="flex flex-col items-center gap-4">
+              <div className="logo-container">
+                {companyLogo ? (
+                  <img
+                    src={getImageSource(companyLogo)}
+                    className="w-full h-full object-contain"
+                    alt="Logo"
+                  />
+                ) : (
+                  <LogIn size={32} style={{ color: '#3cc0c2' }} />
+                )}
+              </div>
+              <div className="space-y-1">
+                <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#3cc0c2] block">
+                  {companyName || "BENNY CARDS"}
+                </span>
+                <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Management Portal</h1>
+              </div>
             </div>
-            <h1 className="text-4xl font-black text-slate-900 tracking-tight">Benny Cards</h1>
-            <p className="text-slate-500 font-bold uppercase tracking-[0.2em] text-[10px]">Admin Portal Access</p>
           </div>
 
+          {/* Login Form */}
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-4">
-              <div className="bg-white p-2 rounded-3xl border border-slate-100 shadow-sm">
-                <div className="flex items-center px-4 py-2 gap-3">
-                  <Mail className="text-slate-400" size={18} />
+              <div className="space-y-3">
+                <label className="text-xs font-semibold text-slate-700 ml-1 block">Email Address</label>
+                <div className="relative group">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-[#3cc0c2] transition-colors duration-300" />
                   <input
                     type="email"
-                    placeholder="Email Address"
-                    className="w-full py-2 bg-transparent text-slate-900 font-bold placeholder:text-slate-300 focus:outline-none"
+                    placeholder="Enter your email"
+                    className="login-input"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -70,13 +114,14 @@ const Login: React.FC = () => {
                 </div>
               </div>
 
-              <div className="bg-white p-2 rounded-3xl border border-slate-100 shadow-sm">
-                <div className="flex items-center px-4 py-2 gap-3">
-                  <Lock className="text-slate-400" size={18} />
+              <div className="space-y-3">
+                <label className="text-xs font-semibold text-slate-700 ml-1 block">Password</label>
+                <div className="relative group">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-[#3cc0c2] transition-colors duration-300" />
                   <input
                     type="password"
-                    placeholder="Password"
-                    className="w-full py-2 bg-transparent text-slate-900 font-bold placeholder:text-slate-300 focus:outline-none"
+                    placeholder="Enter your password"
+                    className="login-input"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -86,25 +131,32 @@ const Login: React.FC = () => {
             </div>
 
             {error && (
-              <div className="bg-rose-50 text-rose-600 p-4 rounded-2xl text-xs font-black uppercase tracking-widest text-center border border-rose-100 animate-shake">
+              <div className="error-message">
+                <AlertCircle size={18} className="shrink-0" />
                 {error}
               </div>
             )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-indigo-600 text-white py-4 rounded-[2rem] font-black uppercase tracking-widest shadow-xl shadow-indigo-600/20 active:scale-95 transition-all hover:bg-indigo-700 disabled:opacity-50"
-            >
-              {loading ? 'Authenticating...' : 'Sign In'}
-            </button>
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={loading}
+                className="login-button"
+              >
+                {loading ? 'Accessing Portal...' : 'Sign In to Dashboard'}
+                {!loading && <ArrowRight size={18} />}
+              </button>
+            </div>
           </form>
 
-          <p className="text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-            Authorized Personnel Only
-          </p>
+          {/* Footer */}
+          <div className="pt-8 border-t border-slate-100 text-center">
+            <p className="text-[10px] text-slate-400 font-medium uppercase tracking-widest">
+              &copy; 2026 Benny Cards • Management Console
+            </p>
+          </div>
         </div>
-        <IonLoading isOpen={loading} message="Checking credentials..." />
+        <IonLoading isOpen={loading} message="Authenticating..." />
       </IonContent>
     </IonPage>
   );

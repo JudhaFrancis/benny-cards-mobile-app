@@ -50,29 +50,35 @@ import '@ionic/react/css/palettes/dark.system.css';
 /* Theme variables */
 import './theme/variables.css';
 
+import { useLocation } from 'react-router-dom';
+
 setupIonicReact();
 
-const App: React.FC = () => (
-  <IonApp>
-    <IonReactRouter>
-      <IonTabs>
-        <IonRouterOutlet>
-          <Route exact path="/login">
-            <Login />
-          </Route>
-          <Route exact path="/dashboard">
-            {localStorage.getItem('auth_token') ? <Dashboard /> : <Redirect to="/login" />}
-          </Route>
-          <Route exact path="/orders">
-            {localStorage.getItem('auth_token') ? <Orders /> : <Redirect to="/login" />}
-          </Route>
-          <Route path="/management">
-            {localStorage.getItem('auth_token') ? <Management /> : <Redirect to="/login" />}
-          </Route>
-          <Route exact path="/">
-            <Redirect to="/dashboard" />
-          </Route>
-        </IonRouterOutlet>
+const App: React.FC = () => {
+  const location = useLocation();
+  const showTabs = location.pathname !== '/login';
+
+  return (
+    <IonTabs>
+      <IonRouterOutlet>
+        <Route exact path="/login">
+          <Login />
+        </Route>
+        <Route exact path="/dashboard">
+          {localStorage.getItem('auth_token') ? <Dashboard /> : <Redirect to="/login" />}
+        </Route>
+        <Route exact path="/orders">
+          {localStorage.getItem('auth_token') ? <Orders /> : <Redirect to="/login" />}
+        </Route>
+        <Route path="/management">
+          {localStorage.getItem('auth_token') ? <Management /> : <Redirect to="/login" />}
+        </Route>
+        <Route exact path="/">
+          <Redirect to="/dashboard" />
+        </Route>
+      </IonRouterOutlet>
+      
+      {showTabs && (
         <IonTabBar slot="bottom">
           <IonTabButton tab="dashboard" href="/dashboard">
             <IonIcon aria-hidden="true" icon={gridOutline} />
@@ -87,9 +93,17 @@ const App: React.FC = () => (
             <IonLabel>Management</IonLabel>
           </IonTabButton>
         </IonTabBar>
-      </IonTabs>
+      )}
+    </IonTabs>
+  );
+};
+
+const MainApp: React.FC = () => (
+  <IonApp>
+    <IonReactRouter>
+      <App />
     </IonReactRouter>
   </IonApp>
 );
 
-export default App;
+export default MainApp;

@@ -86,21 +86,21 @@ const Dashboard: React.FC = () => {
           <IonTitle className="font-bold text-xl">Benny Cards</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent fullscreen className="ion-padding">
+      <IonContent fullscreen className="ion-padding" style={{ '--background': '#FDFCFB' }}>
         <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
           <IonRefresherContent />
         </IonRefresher>
 
         <div className="space-y-6 pb-8">
           <div className="mt-4">
-            <h2 className="text-3xl font-black text-slate-900 tracking-tight">Dashboard</h2>
-            <p className="text-sm text-slate-500 font-medium mt-1">Here's your executive overview.</p>
+            <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Dashboard</h2>
+            <p className="text-sm text-slate-500 font-medium mt-1">Management Overview</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             {statCards.map((card, index) => (
               <div key={index} className="bg-white p-5 rounded-[2.5rem] border border-slate-100 shadow-sm flex flex-col space-y-4">
-                <div className={`${card.color} w-11 h-11 rounded-[1.25rem] flex items-center justify-center text-white shadow-lg shadow-current/20`}>
+                <div className={`w-11 h-11 rounded-[1.25rem] flex items-center justify-center text-white shadow-lg shadow-current/20`} style={{ backgroundColor: '#3cc0c2' }}>
                   <card.icon size={22} />
                 </div>
                 <div>
@@ -119,9 +119,9 @@ const Dashboard: React.FC = () => {
             ))}
           </div>
 
-          {/* Activity Section Placeholder */}
+          {/* System Status Section */}
           <div className="bg-slate-900 rounded-[2.5rem] p-6 text-white shadow-xl shadow-slate-900/20 overflow-hidden relative group">
-            <div className="absolute -right-4 -top-4 w-32 h-32 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-all"></div>
+            <div className="absolute -right-4 -top-4 w-32 h-32 bg-[#3cc0c2]/10 rounded-full blur-3xl group-hover:bg-[#3cc0c2]/20 transition-all"></div>
             <div className="relative z-10 flex flex-col space-y-4">
               <div className="flex justify-between items-center">
                 <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">System Status</span>
@@ -131,8 +131,8 @@ const Dashboard: React.FC = () => {
                 </div>
               </div>
               <h3 className="text-xl font-bold tracking-tight">Operations are running smoothly today.</h3>
-              <button className="bg-white text-slate-900 py-3 rounded-2xl text-xs font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all w-full">
-                View Full Monitor
+              <button className="bg-[#3cc0c2] text-white py-3 rounded-2xl text-xs font-bold uppercase tracking-widest hover:scale-105 active:scale-95 transition-all w-full">
+                View Live Monitor
               </button>
             </div>
           </div>
