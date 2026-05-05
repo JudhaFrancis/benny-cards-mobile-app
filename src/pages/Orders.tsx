@@ -10,17 +10,23 @@ import {
   IonSearchbar,
   RefresherEventDetail,
   IonBadge,
-  IonSpinner
+  IonSpinner,
+  IonFooter
 } from '@ionic/react';
-import { ShoppingBag, ChevronRight, Filter, Search } from 'lucide-react';
+import { useHistory } from 'react-router-dom';
+import { ShoppingBag, Filter, Search, X } from 'lucide-react';
 import api from '../api/api';
+import './Orders.css';
 
 interface Order {
   id: number;
   order_number: string;
-  customer_name: string;
+  customer_details?: {
+    name: string;
+  };
   total_amount: number;
   status: string;
+  resolved_status: string;
   order_date: string;
   items_count?: number;
 }
@@ -29,6 +35,16 @@ const Orders: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('All');
+  const history = useHistory();
+
+  const statuses = [
+    'All', 'New Order', 'Confirmed', 
+    'Designing in Progress', 'Designed', 
+    'Printing in Progress', 'Printed', 
+    'Packing in Progress', 'Packed', 
+    'Out for Delivery', 'Delivered'
+  ];
 
   const fetchOrders = async () => {
     try {
@@ -53,44 +69,68 @@ const Orders: React.FC = () => {
   };
 
   const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'completed':
-      case 'delivered':
-        return 'bg-emerald-100 text-emerald-700';
-      case 'pending':
-        return 'bg-amber-100 text-amber-700';
-      case 'processing':
-      case 'designing':
-      case 'printing':
-        return 'bg-blue-100 text-blue-700';
-      case 'cancelled':
-        return 'bg-rose-100 text-rose-700';
-      default:
-        return 'bg-slate-100 text-slate-700';
-    }
+    const s = status?.toLowerCase() || '';
+    if (s.includes('delivered') || s.includes('completed')) return 'bg-emerald-100 text-emerald-700';
+    if (s.includes('pending') || s.includes('new order')) return 'bg-amber-100 text-amber-700';
+    if (s.includes('progress') || s.includes('designing') || s.includes('printing') || s.includes('packing')) return 'bg-blue-100 text-blue-700';
+    if (s.includes('confirmed') || s.includes('designed') || s.includes('printed') || s.includes('packed')) return 'bg-indigo-100 text-indigo-700';
+    if (s.includes('out for delivery')) return 'bg-purple-100 text-purple-700';
+    if (s.includes('cancelled')) return 'bg-rose-100 text-rose-700';
+    return 'bg-slate-100 text-slate-700';
   };
 
-  const filteredOrders = orders.filter(order => 
-    order.customer_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    order.order_number?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredOrders = orders.filter(order => {
+    const matchesSearch = 
+      order.customer_details?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      order.order_number?.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesStatus = selectedStatus === 'All' || order.resolved_status === selectedStatus;
+    
+    return matchesSearch && matchesStatus;
+  });
 
   return (
-    <IonPage>
+    <IonPage className="orders-container">
       <IonHeader className="ion-no-border">
         <IonToolbar className="px-2">
-          <IonTitle className="font-bold text-xl">Orders</IonTitle>
+          <IonTitle>Orders</IonTitle>
         </IonToolbar>
-        <div className="px-4 pb-2 bg-white">
-          <div className="relative group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
-            <input 
-              type="text" 
-              placeholder="Search by name or order #" 
-              className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all shadow-sm"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+        <div className="search-wrapper">
+          <div className="search-input-container">
+            <div className="search-field">
+              <Search className="search-icon" size={20} />
+              <input 
+                type="text" 
+                placeholder="Search orders..." 
+                className="search-input"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              {searchQuery && (
+                <button 
+                  onClick={() => setSearchQuery('')}
+                  className="clear-button"
+                >
+                  <X size={16} />
+                </button>
+              )}
+            </div>
+            <button className="filter-button">
+              <Filter size={20} />
+            </button>
+          </div>
+
+          {/* Horizontal Status Chips */}
+          <div className="status-chips-container">
+            {statuses.map((status) => (
+              <button
+                key={status}
+                onClick={() => setSelectedStatus(status)}
+                className={`status-chip ${selectedStatus === status ? 'active' : 'inactive'}`}
+              >
+                {status}
+              </button>
+            ))}
           </div>
         </div>
       </IonHeader>
@@ -114,28 +154,35 @@ const Orders: React.FC = () => {
             </div>
           ) : (
             filteredOrders.map((order) => (
-              <div key={order.id} className="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden active:scale-[0.98] transition-transform">
-                <div className="p-5 flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="bg-indigo-50 p-3 rounded-2xl text-indigo-600">
-                      <ShoppingBag size={20} />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">#{order.order_number}</span>
-                        <div className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider ${getStatusColor(order.status)}`}>
-                          {order.status}
-                        </div>
-                      </div>
-                      <h3 className="text-base font-black text-slate-900 mt-1">{order.customer_name}</h3>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
-                        {new Date(order.order_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                      </p>
+              <div 
+                key={order.id} 
+                className="order-card"
+                onClick={() => history.push(`/orders/${order.id}`)}
+              >
+                {/* Color Status Bar */}
+                <div className={`status-indicator ${getStatusColor(order.resolved_status)} !bg-opacity-100`} style={{ backgroundColor: 'currentColor' }} />
+                
+                <div className="order-card-content">
+                  {/* Top Row: Order ID and Status */}
+                  <div className="flex justify-between items-center w-full mb-1.5 gap-1">
+                    <span className="order-number">#{order.order_number}</span>
+                    <div className={`order-status-badge ${getStatusColor(order.resolved_status)}`}>
+                      {order.resolved_status}
                     </div>
                   </div>
-                  <div className="text-right flex flex-col items-end">
-                    <span className="text-base font-black text-slate-900">₹{Number(order.total_amount).toLocaleString()}</span>
-                    <ChevronRight size={16} className="text-slate-300 mt-1" />
+                  
+                  {/* Bottom Row: Customer Details and Amount */}
+                  <div className="flex justify-between items-center w-full gap-3">
+                    <div className="order-details-text">
+                      <h3 className="customer-name">
+                        {order.customer_details?.name || 'Walking Customer'}
+                      </h3>
+                      <span className="order-date">
+                        {new Date(order.order_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </span>
+                    </div>
+                    
+                    <div className="order-amount">₹{Number(order.total_amount).toLocaleString()}</div>
                   </div>
                 </div>
               </div>

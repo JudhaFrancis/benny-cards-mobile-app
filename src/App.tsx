@@ -13,12 +13,16 @@ import { IonReactRouter } from '@ionic/react-router';
 import { 
   gridOutline, 
   receiptOutline, 
-  layersOutline 
+  layersOutline,
+  personOutline
 } from 'ionicons/icons';
 import Dashboard from './pages/Dashboard';
 import Orders from './pages/Orders';
 import Management from './pages/Management';
 import Login from './pages/Login';
+import OrderDetail from './pages/OrderDetail';
+import OrderEdit from './pages/OrderEdit';
+import Profile from './pages/Profile';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -38,17 +42,12 @@ import '@ionic/react/css/display.css';
 
 /**
  * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
  */
-
-/* import '@ionic/react/css/palettes/dark.always.css'; */
-/* import '@ionic/react/css/palettes/dark.class.css'; */
 import '@ionic/react/css/palettes/dark.system.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import './index.css';
 
 import { useLocation } from 'react-router-dom';
 
@@ -70,8 +69,17 @@ const App: React.FC = () => {
         <Route exact path="/orders">
           {localStorage.getItem('auth_token') ? <Orders /> : <Redirect to="/login" />}
         </Route>
+        <Route exact path="/orders/:id">
+          {localStorage.getItem('auth_token') ? <OrderDetail /> : <Redirect to="/login" />}
+        </Route>
+        <Route exact path="/orders/:id/edit">
+          {localStorage.getItem('auth_token') ? <OrderEdit /> : <Redirect to="/login" />}
+        </Route>
         <Route path="/management">
           {localStorage.getItem('auth_token') ? <Management /> : <Redirect to="/login" />}
+        </Route>
+        <Route exact path="/profile">
+          {localStorage.getItem('auth_token') ? <Profile /> : <Redirect to="/login" />}
         </Route>
         <Route exact path="/">
           <Redirect to="/dashboard" />
@@ -91,6 +99,10 @@ const App: React.FC = () => {
           <IonTabButton tab="management" href="/management">
             <IonIcon aria-hidden="true" icon={layersOutline} />
             <IonLabel>Management</IonLabel>
+          </IonTabButton>
+          <IonTabButton tab="profile" href="/profile">
+            <IonIcon aria-hidden="true" icon={personOutline} />
+            <IonLabel>Profile</IonLabel>
           </IonTabButton>
         </IonTabBar>
       )}

@@ -55,7 +55,8 @@ const Login: React.FC = () => {
       if (response.data.success) {
         localStorage.setItem('auth_token', response.data.data.token);
         localStorage.setItem('auth_user', JSON.stringify(response.data.data.user));
-        history.push('/dashboard');
+        // Force a full reload to clear any stale Ionic/Tab state
+        window.location.href = '/dashboard';
       }
     } catch (err: any) {
       if (err.response?.status === 401) {

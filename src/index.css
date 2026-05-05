@@ -5,8 +5,35 @@
 
 :root {
   font-family: 'Poppins', sans-serif;
+  --ion-font-family: 'Poppins', sans-serif !important;
+}
+
+* {
+  font-family: 'Poppins', sans-serif !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+ion-label, ion-tab-button, ion-tab-bar, ion-title, ion-content, ion-select, ion-select-option, ion-popover {
+  font-family: 'Poppins', sans-serif !important;
 }
 
 body {
   font-family: 'Poppins', sans-serif;
+  background-color: #f8fafc; /* slate-50 */
+}
+
+/* Custom Scrollbar Hiding */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Glassmorphism utility */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
