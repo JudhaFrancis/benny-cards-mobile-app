@@ -118,6 +118,64 @@ ion-title {
   background-color: var(--app-slate-100);
 }
 
+.filter-button.active {
+  background-color: white;
+  border-color: var(--app-teal);
+  box-shadow: 0 4px 12px rgba(60, 192, 194, 0.15);
+}
+
+/* Date Filter Panel */
+.date-filter-panel {
+  margin-top: 1rem;
+  padding: 1.25rem;
+  background: #ffffff;
+  border: 1px solid var(--app-slate-100);
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+}
+
+.date-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.date-input-group label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--app-slate-500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding-left: 0.25rem;
+}
+
+.date-filter-input {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: var(--app-slate-50);
+  border: 1px solid var(--app-slate-100);
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--app-slate-800);
+  font-family: inherit;
+}
+
+.date-filter-input:focus {
+  outline: none;
+  border-color: var(--app-teal);
+  background-color: #ffffff;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-down {
+  animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 /* Status Chips */
 .filter-tabs {
   display: flex;

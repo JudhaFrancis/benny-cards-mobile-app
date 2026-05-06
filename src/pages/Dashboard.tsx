@@ -21,6 +21,13 @@ interface DashboardStats {
   total_revenue: number;
   monthly_trend: any[];
   payment_distribution: { paid: number; pending: number; overdue: number };
+  stage_stats: {
+    new_order: number;
+    designing: number;
+    printing: number;
+    packaging: number;
+    delivered: number;
+  };
 }
 
 const Dashboard: React.FC = () => {
@@ -70,31 +77,45 @@ const Dashboard: React.FC = () => {
 
   const statCards = [
     {
-      title: "Total Orders",
-      value: stats?.total_orders.toLocaleString() || "0",
+      title: "New Orders",
+      value: stats?.stage_stats?.new_order?.toLocaleString() || "0",
       icon: ShoppingCart,
       color: "bg-blue-500",
       trend: "+12.5%"
     },
     {
-      title: "Completed",
-      value: stats?.completed_orders.toLocaleString() || "0",
-      icon: CheckCircle,
+      title: "Designing",
+      value: stats?.stage_stats?.designing?.toLocaleString() || "0",
+      icon: User,
       color: "bg-emerald-500",
       trend: "+8.2%"
     },
     {
-      title: "Payments",
-      value: stats?.total_payments.toLocaleString() || "0",
+      title: "Printing",
+      value: stats?.stage_stats?.printing?.toLocaleString() || "0",
       icon: Clock,
       color: "bg-amber-500",
       trend: "-3.1%"
     },
     {
+      title: "Packaging",
+      value: stats?.stage_stats?.packaging?.toLocaleString() || "0",
+      icon: CheckCircle,
+      color: "bg-indigo-500",
+      trend: "+15.3%"
+    },
+    {
+      title: "Delivered",
+      value: stats?.stage_stats?.delivered?.toLocaleString() || "0",
+      icon: CheckCircle,
+      color: "bg-slate-500",
+      trend: "+5.1%"
+    },
+    {
       title: "Revenue",
       value: `₹${Number(stats?.total_revenue || 0).toLocaleString()}`,
       icon: IndianRupee,
-      color: "bg-indigo-500",
+      color: "bg-emerald-600",
       trend: "+15.3%"
     }
   ];
@@ -160,23 +181,6 @@ const Dashboard: React.FC = () => {
             ))}
           </div>
 
-          {/* System Status Section */}
-          <div className="bg-slate-900 rounded-[2.5rem] p-6 text-white shadow-xl shadow-slate-900/20 overflow-hidden relative group">
-            <div className="absolute -right-4 -top-4 w-32 h-32 bg-[#3cc0c2]/10 rounded-full blur-3xl group-hover:bg-[#3cc0c2]/20 transition-all"></div>
-            <div className="relative z-10 flex flex-col space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">System Status</span>
-                <div className="flex items-center gap-2">
-                  <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></div>
-                  <span className="text-[10px] font-bold uppercase tracking-widest">Active</span>
-                </div>
-              </div>
-              <h3 className="text-xl font-bold tracking-tight">Operations are running smoothly today.</h3>
-              <button className="bg-[#3cc0c2] text-white py-3 rounded-2xl text-xs font-bold uppercase tracking-widest hover:scale-105 active:scale-95 transition-all w-full">
-                View Live Monitor
-              </button>
-            </div>
-          </div>
         </div>
       </IonContent>
 

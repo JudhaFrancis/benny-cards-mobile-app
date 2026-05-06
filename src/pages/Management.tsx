@@ -14,7 +14,7 @@ import {
   IonSpinner
 } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
-import { Layers, User, Palette, Printer, Box, Truck, ChevronRight } from 'lucide-react';
+import { Layers, User, Palette, Printer, Box, Truck, ChevronRight, ChevronLeft } from 'lucide-react';
 import api from '../api/api';
 import './Orders.css'; // Reuse the premium card styles
 
@@ -40,6 +40,10 @@ const Management: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedStage, setSelectedStage] = useState('client-information');
+  const [selectedStatus, setSelectedStatus] = useState('All');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+  const [total, setTotal] = useState(0);
 
   const stages = [
     { id: 'client-information', label: 'Client', icon: User, color: 'bg-blue-500', text: 'text-blue-700', border: 'bg-blue-100' },
@@ -49,14 +53,23 @@ const Management: React.FC = () => {
     { id: 'delivery', label: 'Deliver', icon: Truck, color: 'bg-rose-500', text: 'text-rose-700', border: 'bg-rose-100' },
   ];
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (page = 1) => {
     setLoading(true);
     try {
       const response = await api.get(`/orders`, {
-        params: { stage: selectedStage }
+        params: { 
+          stage: selectedStage,
+          page: page,
+          per_page: 20,
+          status: selectedStatus !== 'All' ? selectedStatus : undefined
+        }
       });
       if (response.data.success) {
-        setOrders(response.data.data.data || []);
+        const paginatedData = response.data.data;
+        setOrders(paginatedData.data || []);
+        setCurrentPage(paginatedData.current_page);
+        setLastPage(paginatedData.last_page);
+        setTotal(paginatedData.total);
       }
     } catch (error) {
       console.error('Error fetching stage orders:', error);
@@ -66,11 +79,11 @@ const Management: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchOrders();
-  }, [selectedStage]);
+    fetchOrders(1);
+  }, [selectedStage, selectedStatus]);
 
   const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => {
-    await fetchOrders();
+    await fetchOrders(1);
     event.detail.complete();
   };
 
@@ -137,6 +150,44 @@ const Management: React.FC = () => {
   };
 
   const currentStage = stages.find(s => s.id === selectedStage);
+  const internalStatuses = ['All', 'Pending', 'Process', 'Completed'];
+
+  const filteredOrders = orders.filter(order => {
+    if (selectedStatus === 'All') return true;
+    const stageStatus = getStageStatus(order);
+    return stageStatus === selectedStatus;
+  });
+
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    
+    if (lastPage <= 5) {
+      for (let i = 1; i <= lastPage; i++) pages.push(i);
+      return pages;
+    }
+
+    // Always show 1 and 2
+    pages.push(1);
+    pages.push(2);
+
+    if (currentPage > 3) {
+      pages.push('...');
+    }
+
+    if (currentPage > 2 && currentPage < lastPage) {
+      pages.push(currentPage);
+    }
+
+    if (currentPage < lastPage - 1) {
+      pages.push('...');
+    }
+
+    // Always show last page
+    pages.push(lastPage);
+    
+    // Deduplicate while preserving order
+    return pages.filter((item, index) => pages.indexOf(item) === index);
+  };
 
   return (
     <IonPage className="orders-container">
@@ -187,8 +238,21 @@ const Management: React.FC = () => {
               </h2>
             </div>
             <span className="text-[9px] font-black text-slate-500 bg-white border border-slate-100 px-3 py-1.5 rounded-2xl uppercase tracking-widest shadow-sm">
-              {orders.length} Active
+              {filteredOrders.length} Active
             </span>
+          </div>
+
+          {/* Status Chips Filter */}
+          <div className="status-chips-container !mt-1">
+            {internalStatuses.map((status) => (
+              <button
+                key={status}
+                onClick={() => setSelectedStatus(status)}
+                className={`status-chip ${selectedStatus === status ? 'active' : 'inactive'}`}
+              >
+                {status}
+              </button>
+            ))}
           </div>
 
           {loading ? (
@@ -196,16 +260,16 @@ const Management: React.FC = () => {
               <IonSpinner name="crescent" color="primary" />
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest animate-pulse">Syncing Queue...</p>
             </div>
-          ) : orders.length === 0 ? (
+          ) : filteredOrders.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 bg-white rounded-[3rem] border border-dashed border-slate-200 m-3 shadow-sm">
               <div className="bg-slate-50 p-6 rounded-full mb-4">
                 <Layers size={40} className="text-slate-200" />
               </div>
-              <p className="text-sm font-black text-slate-400 uppercase tracking-widest text-center">Queue is empty</p>
+              <p className="text-sm font-black text-slate-400 uppercase tracking-widest text-center">No {selectedStatus} items</p>
             </div>
           ) : (
             <div className="px-1 space-y-4">
-              {orders.map((order) => (
+              {filteredOrders.map((order) => (
                 <div
                   key={order.id}
                   className="order-card"
@@ -236,6 +300,44 @@ const Management: React.FC = () => {
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+
+          {/* Pagination Controls */}
+          {!loading && lastPage > 1 && (
+            <div className="flex justify-end px-4 mt-4 mb-8">
+              <div className="flex items-center gap-2">
+                <button 
+                  disabled={currentPage === 1}
+                  onClick={() => fetchOrders(currentPage - 1)}
+                  className={`flex items-center justify-center w-7 h-7 rounded-full transition-all ${currentPage === 1 ? 'text-slate-200 bg-transparent' : 'text-[#3cc0c2] bg-white shadow-sm border border-slate-100 active:scale-90'}`}
+                >
+                  <ChevronLeft size={14} strokeWidth={3} />
+                </button>
+                
+                <div className="flex items-center gap-1">
+                  {getPageNumbers().map((p, i) => (
+                    <button
+                      key={i}
+                      disabled={p === '...'}
+                      onClick={() => typeof p === 'number' && fetchOrders(p)}
+                      className={`flex items-center justify-center w-7 h-7 rounded-full text-[10px] font-black transition-all duration-300
+                        ${p === currentPage ? 'bg-[#3cc0c2] text-white shadow-md shadow-teal-100 scale-110' : 
+                          p === '...' ? 'text-slate-300' : 'text-slate-400 hover:text-slate-700 bg-white shadow-xs border border-slate-50'}`}
+                    >
+                      {p}
+                    </button>
+                  ))}
+                </div>
+
+                <button 
+                  disabled={currentPage === lastPage}
+                  onClick={() => fetchOrders(currentPage + 1)}
+                  className={`flex items-center justify-center w-7 h-7 rounded-full transition-all ${currentPage === lastPage ? 'text-slate-200 bg-transparent' : 'text-[#3cc0c2] bg-white shadow-sm border border-slate-100 active:scale-90'}`}
+                >
+                  <ChevronRight size={14} strokeWidth={3} />
+                </button>
+              </div>
             </div>
           )}
         </div>

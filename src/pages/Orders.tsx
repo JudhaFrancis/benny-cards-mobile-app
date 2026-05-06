@@ -11,10 +11,14 @@ import {
   RefresherEventDetail,
   IonBadge,
   IonSpinner,
-  IonFooter
+  IonFooter,
+  IonModal,
+  IonDatetime,
+  IonButton,
+  IonButtons
 } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
-import { ShoppingBag, Filter, Search, X } from 'lucide-react';
+import { ShoppingBag, Calendar as CalendarIcon, Search, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import api from '../api/api';
 import './Orders.css';
 
@@ -36,6 +40,12 @@ const Orders: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('All');
+  const [filterDate, setFilterDate] = useState('');
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [tempDate, setTempDate] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+  const [total, setTotal] = useState(0);
   const history = useHistory();
 
   const statuses = [
@@ -46,11 +56,25 @@ const Orders: React.FC = () => {
     'Out for Delivery', 'Delivered'
   ];
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (page = 1) => {
     try {
-      const response = await api.get(`/orders`);
+      setLoading(true);
+      const response = await api.get(`/orders`, {
+        params: {
+          page: page,
+          per_page: 20,
+          status: selectedStatus !== 'All' ? selectedStatus : undefined,
+          search: searchQuery || undefined,
+          start_date: filterDate || undefined,
+          end_date: filterDate || undefined
+        }
+      });
       if (response.data.success) {
-        setOrders(response.data.data.data || []);
+        const paginatedData = response.data.data;
+        setOrders(paginatedData.data || []);
+        setCurrentPage(paginatedData.current_page);
+        setLastPage(paginatedData.last_page);
+        setTotal(paginatedData.total);
       }
     } catch (error) {
       console.error('Error fetching orders:', error);
@@ -60,11 +84,11 @@ const Orders: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchOrders();
-  }, []);
+    fetchOrders(1);
+  }, [selectedStatus, searchQuery, filterDate]);
 
   const handleRefresh = async (event: CustomEvent<RefresherEventDetail>) => {
-    await fetchOrders();
+    await fetchOrders(1);
     event.detail.complete();
   };
 
@@ -90,15 +114,47 @@ const Orders: React.FC = () => {
     return 'bg-slate-300';
   };
 
-  const filteredOrders = orders.filter(order => {
-    const matchesSearch = 
-      order.customer_details?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.order_number?.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredOrders = orders; // Now filtered on server side
+
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
     
-    const matchesStatus = selectedStatus === 'All' || order.resolved_status === selectedStatus;
+    if (lastPage <= 5) {
+      for (let i = 1; i <= lastPage; i++) pages.push(i);
+      return pages;
+    }
+
+    // Always show 1 and 2
+    pages.push(1);
+    pages.push(2);
+
+    if (currentPage > 3) {
+      pages.push('...');
+    }
+
+    if (currentPage > 2 && currentPage < lastPage) {
+      pages.push(currentPage);
+    }
+
+    if (currentPage < lastPage - 1) {
+      pages.push('...');
+    }
+
+    // Always show last page
+    pages.push(lastPage);
     
-    return matchesSearch && matchesStatus;
-  });
+    // Deduplicate while preserving order
+    return pages.filter((item, index) => pages.indexOf(item) === index);
+  };
+
+  const handleDateConfirm = () => {
+    if (tempDate) {
+      // tempDate from IonDatetime is usually ISO string or YYYY-MM-DD
+      const dateOnly = tempDate.split('T')[0];
+      setFilterDate(dateOnly);
+    }
+    setShowDatePicker(false);
+  };
 
   return (
     <IonPage className="orders-container">
@@ -128,10 +184,85 @@ const Orders: React.FC = () => {
                 </button>
               )}
             </div>
-            <button className="filter-button">
-              <Filter size={20} />
-            </button>
+            <div className="relative">
+              <button 
+                className={`filter-button ${filterDate ? 'active' : ''}`}
+                onClick={() => setShowDatePicker(true)}
+              >
+                <CalendarIcon size={20} className={filterDate ? 'text-indigo-600' : ''} />
+              </button>
+            </div>
           </div>
+
+          <IonModal 
+            isOpen={showDatePicker} 
+            onDidDismiss={() => setShowDatePicker(false)}
+            className="date-picker-modal"
+            style={{ '--height': 'auto', '--width': '90%', '--max-width': '330px', '--border-radius': '1.5rem' }}
+          >
+            <div className="bg-white overflow-hidden flex flex-col">
+              <div className="px-4 py-2.5 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
+                <h3 className="text-[13px] font-black text-slate-800 tracking-tight">Select Date</h3>
+                <button 
+                  onClick={() => setShowDatePicker(false)} 
+                  className="w-7 h-7 flex items-center justify-center bg-white rounded-full shadow-sm text-slate-400 active:scale-90 transition-all"
+                >
+                  <X size={16} strokeWidth={3} />
+                </button>
+              </div>
+              
+              <div className="p-1 px-2">
+                <IonDatetime
+                  presentation="date"
+                  size="cover"
+                  value={tempDate || filterDate || new Date().toISOString()}
+                  onIonChange={e => setTempDate(e.detail.value as string)}
+                  style={{ 
+                    '--background': 'transparent',
+                    '--font-size': '13px',
+                    'font-family': 'Poppins, sans-serif'
+                  }}
+                  className="custom-calendar"
+                />
+              </div>
+
+              <div className="px-4 py-3 flex gap-2 border-t border-slate-50 bg-slate-50/20 pb-6">
+                <button 
+                  onClick={() => {
+                    setFilterDate('');
+                    setShowDatePicker(false);
+                  }}
+                  className="flex-1 h-10 flex items-center justify-center rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-400 bg-white border border-slate-100 active:scale-95 transition-all"
+                >
+                  Clear
+                </button>
+                <button 
+                  onClick={handleDateConfirm}
+                  className="flex-1 h-10 flex items-center justify-center bg-[#3cc0c2] text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-md shadow-teal-100 active:scale-95 transition-all"
+                >
+                  Set Date
+                </button>
+              </div>
+            </div>
+          </IonModal>
+
+          {/* Active Date Chip */}
+          {filterDate && (
+            <div className="flex items-center gap-2 mt-3 animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="flex items-center gap-2 bg-indigo-50 border border-indigo-100 px-3 py-1.5 rounded-full shadow-sm">
+                <CalendarIcon size={12} className="text-indigo-600" />
+                <span className="text-[11px] font-black text-indigo-700">
+                  {new Date(filterDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                </span>
+                <button 
+                  onClick={() => setFilterDate('')}
+                  className="ml-1 p-0.5 hover:bg-indigo-100 rounded-full text-indigo-400 hover:text-indigo-600 transition-colors"
+                >
+                  <X size={12} strokeWidth={3} />
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Horizontal Status Chips */}
           <div className="status-chips-container">
@@ -200,6 +331,44 @@ const Orders: React.FC = () => {
                 </div>
               </div>
             ))
+          )}
+
+          {/* Pagination Controls */}
+          {!loading && lastPage > 1 && (
+            <div className="flex justify-end px-4 mt-4 mb-8">
+              <div className="flex items-center gap-2">
+                <button 
+                  disabled={currentPage === 1}
+                  onClick={() => fetchOrders(currentPage - 1)}
+                  className={`flex items-center justify-center w-7 h-7 rounded-full transition-all ${currentPage === 1 ? 'text-slate-200 bg-transparent' : 'text-[#3cc0c2] bg-white shadow-sm border border-slate-100 active:scale-90'}`}
+                >
+                  <ChevronLeft size={14} strokeWidth={3} />
+                </button>
+                
+                <div className="flex items-center gap-1">
+                  {getPageNumbers().map((p, i) => (
+                    <button
+                      key={i}
+                      disabled={p === '...'}
+                      onClick={() => typeof p === 'number' && fetchOrders(p)}
+                      className={`flex items-center justify-center w-7 h-7 rounded-full text-[10px] font-black transition-all duration-300
+                        ${p === currentPage ? 'bg-[#3cc0c2] text-white shadow-md shadow-teal-100 scale-110' : 
+                          p === '...' ? 'text-slate-300' : 'text-slate-400 hover:text-slate-700 bg-white shadow-xs border border-slate-50'}`}
+                    >
+                      {p}
+                    </button>
+                  ))}
+                </div>
+
+                <button 
+                  disabled={currentPage === lastPage}
+                  onClick={() => fetchOrders(currentPage + 1)}
+                  className={`flex items-center justify-center w-7 h-7 rounded-full transition-all ${currentPage === lastPage ? 'text-slate-200 bg-transparent' : 'text-[#3cc0c2] bg-white shadow-sm border border-slate-100 active:scale-90'}`}
+                >
+                  <ChevronRight size={14} strokeWidth={3} />
+                </button>
+              </div>
+            </div>
           )}
         </div>
       </IonContent>
