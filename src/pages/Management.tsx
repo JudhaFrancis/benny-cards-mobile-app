@@ -23,8 +23,16 @@ interface Order {
   order_number: string;
   customer_name: string;
   status: string;
+  resolved_status: string;
   current_stage_status?: string;
   order_date: string;
+  delivery_date?: string;
+  created_at: string;
+  client_information?: { status: string };
+  designing?: { status: string };
+  printing?: { status: string };
+  packaging?: { status: string };
+  dispatch_delivery?: { status: string };
 }
 
 const Management: React.FC = () => {
@@ -66,30 +74,100 @@ const Management: React.FC = () => {
     event.detail.complete();
   };
 
+  const getStatusColor = (status: string) => {
+    const s = status?.toLowerCase() || '';
+    if (s.includes('delivered') || s.includes('completed')) return 'bg-emerald-100 text-emerald-700';
+    if (s.includes('pending') || s.includes('new order')) return 'bg-amber-100 text-amber-700';
+    if (s.includes('progress') || s.includes('process') || s.includes('designing') || s.includes('printing') || s.includes('packing')) return 'bg-blue-100 text-blue-700';
+    if (s.includes('confirmed') || s.includes('designed') || s.includes('printed') || s.includes('packed')) return 'bg-indigo-100 text-indigo-700';
+    if (s.includes('out for delivery')) return 'bg-purple-100 text-purple-700';
+    if (s.includes('cancelled')) return 'bg-rose-100 text-rose-700';
+    return 'bg-slate-100 text-slate-700';
+  };
+
+  const getStatusIndicatorColor = (status: string) => {
+    const s = status?.toLowerCase() || '';
+    if (s.includes('delivered') || s.includes('completed')) return 'bg-emerald-500';
+    if (s.includes('pending') || s.includes('new order')) return 'bg-amber-500';
+    if (s.includes('progress') || s.includes('process') || s.includes('designing') || s.includes('printing') || s.includes('packing')) return 'bg-blue-500';
+    if (s.includes('confirmed') || s.includes('designed') || s.includes('printed') || s.includes('packed')) return 'bg-indigo-500';
+    if (s.includes('out for delivery')) return 'bg-purple-500';
+    if (s.includes('cancelled')) return 'bg-rose-500';
+    return 'bg-slate-300';
+  };
+
+  const getStageStatus = (order: Order) => {
+    switch (selectedStage) {
+      case 'client-information': return order.client_information?.status;
+      case 'designing': return order.designing?.status;
+      case 'printing': return order.printing?.status;
+      case 'packaging': return order.packaging?.status;
+      case 'delivery': return order.dispatch_delivery?.status;
+      default: return null;
+    }
+  };
+
+  const getAssignedDate = (order: Order) => {
+    let dateStr = null;
+    switch (selectedStage) {
+      case 'client-information':
+        dateStr = order.order_date || order.created_at;
+        break;
+      case 'designing':
+        dateStr = (order as any).designing?.work_assign?.assigned_date;
+        break;
+      case 'printing':
+        dateStr = (order as any).printing?.printing_status?.confirmed_date || 
+                  (order as any).printing?.printing_status?.assigned_date;
+        break;
+      case 'packaging':
+        dateStr = (order as any).packaging?.packaging_logistics?.date;
+        break;
+      case 'delivery':
+        dateStr = (order as any).dispatch_delivery?.dispatch_mode?.date;
+        break;
+    }
+
+    if (!dateStr) return null;
+    try {
+      return new Date(dateStr).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    } catch (e) {
+      return null;
+    }
+  };
+
   const currentStage = stages.find(s => s.id === selectedStage);
 
   return (
     <IonPage className="orders-container">
       <IonHeader className="ion-no-border">
+        <div className="h-5 bg-white" />
         <IonToolbar className="px-2">
-          <IonTitle className="font-bold text-xl">Management</IonTitle>
+          <IonTitle className="font-bold text-lg">Management</IonTitle>
         </IonToolbar>
+        <div className="h-2 bg-white" />
         <div className="bg-white px-2 pb-4">
           <div className="flex overflow-x-auto no-scrollbar gap-3 px-3 py-2">
             {stages.map((stage) => (
               <button
                 key={stage.id}
                 onClick={() => setSelectedStage(stage.id)}
-                className={`flex flex-col items-center justify-center min-w-[80px] p-4 rounded-[2rem] transition-all duration-500 ${
-                  selectedStage === stage.id 
-                    ? 'bg-slate-900 text-white shadow-2xl shadow-slate-900/40 scale-105' 
-                    : 'bg-slate-50 text-slate-400 hover:bg-slate-100'
-                }`}
+                className={`flex flex-col items-center justify-center min-w-[75px] py-3 px-2 rounded-[2.5rem] transition-all duration-500 relative ${selectedStage === stage.id
+                    ? 'bg-white shadow-xl shadow-slate-200/60 scale-105 border border-slate-50'
+                    : 'bg-transparent border border-transparent'
+                  }`}
               >
-                <div className={`p-2 rounded-full ${selectedStage === stage.id ? 'bg-white/10' : ''}`}>
-                  <stage.icon size={22} className={selectedStage === stage.id ? 'text-white' : stage.text.replace('700', '500')} />
+                <div className={`p-3 rounded-[1.25rem] transition-all duration-500 ${selectedStage === stage.id ? stage.color + ' text-white shadow-lg shadow-current/20' : 'bg-slate-50 text-slate-300'
+                  }`}>
+                  <stage.icon size={20} className="transition-transform duration-500" />
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-widest mt-2">{stage.label}</span>
+                <span className={`text-[8px] font-black uppercase tracking-[0.2em] mt-2.5 transition-colors duration-500 ${selectedStage === stage.id ? 'text-slate-900' : 'text-slate-400'
+                  }`}>
+                  {stage.label}
+                </span>
+                {selectedStage === stage.id && (
+                  <div className={`absolute -bottom-1 w-1 h-1 rounded-full ${stage.color}`} />
+                )}
               </button>
             ))}
           </div>
@@ -104,11 +182,11 @@ const Management: React.FC = () => {
           <div className="flex items-center justify-between px-3">
             <div className="flex items-center gap-3">
               <div className={`w-1 h-6 rounded-full ${currentStage?.color}`} />
-              <h2 className="text-base font-black text-slate-900 uppercase tracking-widest">
+              <h2 className="text-[12px] font-bold text-slate-800 tracking-tight">
                 {currentStage?.label} Queue
               </h2>
             </div>
-            <span className="text-[11px] font-black text-slate-500 bg-white border border-slate-100 px-3 py-1.5 rounded-2xl uppercase tracking-widest shadow-sm">
+            <span className="text-[9px] font-black text-slate-500 bg-white border border-slate-100 px-3 py-1.5 rounded-2xl uppercase tracking-widest shadow-sm">
               {orders.length} Active
             </span>
           </div>
@@ -128,40 +206,32 @@ const Management: React.FC = () => {
           ) : (
             <div className="px-1 space-y-4">
               {orders.map((order) => (
-                <div 
-                  key={order.id} 
-                  className="order-card !mb-0 border-none shadow-md shadow-slate-200/50"
-                  onClick={() => history.push(`/orders/${order.id}`)}
+                <div
+                  key={order.id}
+                  className="order-card"
+                  onClick={() => history.push(`/management/${order.id}?stage=${selectedStage}`)}
                 >
-                  <div className={`status-indicator ${currentStage?.color}`} style={{ backgroundColor: 'currentColor' }} />
-                  
-                  <div className="order-card-content !py-6">
-                    <div className="flex justify-between items-center w-full mb-2 gap-1">
-                      <span className="order-number font-black text-[11px] tracking-wider text-slate-400 uppercase">
-                        #{order.order_number}
-                      </span>
-                      <div className={`order-status-badge !px-3 !py-1 !rounded-full !text-[10px] ${currentStage?.border} ${currentStage?.text}`}>
-                        {order.current_stage_status || 'Waiting'}
+                  <div className={`absolute left-0 top-0 bottom-0 w-1 rounded-l-2xl ${getStatusIndicatorColor(getStageStatus(order) || order.resolved_status)}`} />
+
+                  <div className="order-card-content">
+                    <div className="flex justify-between items-center w-full mb-1.5 gap-1">
+                      <span className="order-number">#{order.order_number}</span>
+                      <div className={`order-status-badge ${getStatusColor(getStageStatus(order) || order.resolved_status)}`}>
+                        {getStageStatus(order) || order.resolved_status || 'Waiting'}
                       </div>
                     </div>
-                    
-                    <div className="flex justify-between items-end w-full gap-3">
+
+                    <div className="flex justify-between items-center w-full gap-3">
                       <div className="order-details-text">
-                        <h3 className="customer-name !text-lg !font-black !text-slate-900 !mb-1">
+                        <h3 className="customer-name">
                           {order.customer_name || (order as any).customer_details?.name || 'New Client'}
                         </h3>
-                        <div className="flex items-center gap-2">
-                          <span className="order-date !text-[11px] !font-bold">
-                            {order.order_date ? new Date(order.order_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : 'Today'}
-                          </span>
-                          <div className="w-1 h-1 rounded-full bg-slate-300" />
-                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Standard Process</span>
-                        </div>
+                        <span className="order-date">
+                          {getAssignedDate(order) || 'Just Assigned'}
+                        </span>
                       </div>
-                      
-                      <div className="flex items-center justify-center w-10 h-10 rounded-2xl bg-slate-50 text-slate-300">
-                        <ChevronRight size={20} />
-                      </div>
+
+                      <div className="order-amount">₹{Number((order as any).total_amount || 0).toLocaleString()}</div>
                     </div>
                   </div>
                 </div>

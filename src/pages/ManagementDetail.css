@@ -1,0 +1,46 @@
+/* Management Detail / View Mode Styles */
+.status-badge-view {
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 100px;
+  text-transform: uppercase;
+}
+
+.status-badge-view.pending { background: #fff7ed; color: #ea580c; }
+.status-badge-view.process { background: #eff6ff; color: #2563eb; }
+.status-badge-view.completed { background: #f0fdf4; color: #16a34a; }
+
+/* Special styling for the read-only view-text inside boxes */
+.view-text {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1e293b;
+  padding: 4px 0;
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+}
+
+/* Ensure the cards look exactly like the edit ones but non-interactive */
+.detail-card .view-group {
+  margin-bottom: 4px;
+}
+
+.type-tag {
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.specs-box {
+  line-height: 1.5;
+  color: #475569;
+  font-size: 0.85rem;
+  font-weight: 600;
+}

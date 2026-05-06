@@ -13,6 +13,10 @@
   --app-slate-900: #0f172a;
 }
 
+.extra-small-text {
+  font-size: 17px !important;
+}
+
 ion-toolbar {
   --background: #ffffff;
   --padding-top: 12px;
@@ -30,7 +34,7 @@ ion-title {
 
 /* Search Bar Wrapper */
 .search-wrapper {
-  padding: 1rem;
+  padding: 0.25rem 1rem 1rem 1rem;
   background: #ffffff;
   border-bottom: 1px solid var(--app-slate-50);
   position: sticky;
@@ -244,24 +248,36 @@ ion-title {
 }
 
 .order-number {
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   font-weight: 700;
   color: var(--app-teal);
   text-transform: uppercase;
   letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.extra-small-text {
+  font-size: 0.65rem;
 }
 
 .order-status-badge {
-  padding: 0.05rem 0.15rem;
-  border-radius: 0.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.3rem;
   font-size: 0.65rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.01em;
-  white-space: nowrap;
   box-shadow: 0 1px 5px rgba(0,0,0,0.02);
   border: 1px solid rgba(255,255,255,0.1);
-  flex-shrink: 0;
+  white-space: normal;
+  text-align: center;
+  margin-left: auto;
+  line-height: 1.2;
+  max-width: 100px;
 }
 
 .customer-name {

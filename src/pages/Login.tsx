@@ -144,7 +144,7 @@ const Login: React.FC = () => {
                 disabled={loading}
                 className="login-button"
               >
-                {loading ? 'Accessing Portal...' : 'Sign In to Dashboard'}
+                {loading ? 'Accessing Portal...' : 'Sign In'}
                 {!loading && <ArrowRight size={18} />}
               </button>
             </div>

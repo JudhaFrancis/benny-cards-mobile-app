@@ -1,0 +1,234 @@
+/* Management Edit Specific Overrides */
+
+/* Make Select boxes match the OrderDetail input style exactly */
+.status-select-badge {
+  background: white;
+  border: 1.5px solid #e2f2f3;
+  border-radius: 100px;
+  padding: 2px 10px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(60, 192, 194, 0.05);
+}
+
+.status-select-compact {
+  --padding-start: 4px;
+  --padding-end: 4px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #3cc0c2;
+  --placeholder-color: #3cc0c2;
+  --placeholder-opacity: 1;
+}
+
+/* Custom Input Fields to match OrderDetail exactly */
+.input-field-wrapper {
+  background: white !important;
+  border: 2px solid #eef2ff !important; /* Light Indigo like OrderDetail */
+  border-radius: 12px !important;
+  padding: 4px 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  transition: all 0.3s ease;
+}
+
+.input-field-wrapper:focus-within {
+  border-color: #3cc0c2 !important;
+  box-shadow: 0 0 0 4px rgba(60, 192, 194, 0.05);
+}
+
+.input-field-wrapper.readonly {
+  background: #f8fafc !important;
+  border-color: #f1f5f9 !important;
+}
+
+.custom-ion-input {
+  --padding-start: 0;
+  --padding-end: 0;
+  --color: #1e293b;
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+  --highlight-height: 0;
+}
+
+/* Date/Time input specific styling to match design */
+input[type="date"], input[type="time"] {
+  font-family: inherit;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.save-btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 16px;
+  font-weight: 800;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: white;
+  box-shadow: 0 8px 20px rgba(60, 192, 194, 0.2);
+  transition: all 0.3s ease;
+  letter-spacing: 0.02em;
+}
+
+.save-btn:active {
+  transform: scale(0.98);
+}
+
+.cancel-btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 16px;
+  font-weight: 800;
+  font-size: 0.95rem;
+  background: #f1f5f9;
+  color: #64748b;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.cancel-btn:active {
+  background: #e2e8f0;
+}
+
+/* Custom Dropdown Styles (from OrderEdit) */
+.custom-dropdown-trigger {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  border: 2px solid #eef2ff; /* Matching OrderDetail border */
+  border-radius: 12px;
+  padding: 10px 14px;
+  min-height: 46px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.custom-dropdown-trigger:active {
+  background: #f8fafc;
+}
+
+.custom-dropdown-trigger .selected-value {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1e293b;
+  text-transform: capitalize;
+}
+
+.dropdown-icon {
+  color: #3cc0c2;
+}
+
+.custom-dropdown-list {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 15px;
+  z-index: 1000;
+  max-height: 250px;
+  overflow-y: auto;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  padding: 8px 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.dropdown-item {
+  padding: 12px 18px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #475569;
+  border-bottom: 1px solid #f8fafc;
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-item.active {
+  background: #f0f9f9;
+  color: #3cc0c2;
+}
+
+.dropdown-item.multi-active {
+  background: #f0f9f9;
+  color: #3cc0c2;
+}
+
+.dropdown-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+}
+
+/* Management Detail / View Mode Styles */
+.view-group {
+  margin-bottom: 4px;
+}
+
+.view-group label {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #94a3b8;
+  letter-spacing: 0.05em;
+  margin-bottom: 2px;
+}
+
+.view-group p {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.highlight-text {
+  color: #3cc0c2 !important;
+}
+
+.type-tag {
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.specs-box {
+  background: #f8fafc;
+  border: 1.5px solid #f1f5f9;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475569;
+  line-height: 1.5;
+  margin-top: 4px;
+}
+
+.status-badge-view {
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 100px;
+  text-transform: uppercase;
+}
+
+.status-badge-view.pending { background: #fff7ed; color: #ea580c; }
+.status-badge-view.process { background: #eff6ff; color: #2563eb; }
+.status-badge-view.completed { background: #f0fdf4; color: #16a34a; }

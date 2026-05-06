@@ -79,6 +79,17 @@ const Orders: React.FC = () => {
     return 'bg-slate-100 text-slate-700';
   };
 
+  const getStatusIndicatorColor = (status: string) => {
+    const s = status?.toLowerCase() || '';
+    if (s.includes('delivered') || s.includes('completed')) return 'bg-emerald-500';
+    if (s.includes('pending') || s.includes('new order')) return 'bg-amber-500';
+    if (s.includes('progress') || s.includes('process') || s.includes('designing') || s.includes('printing') || s.includes('packing')) return 'bg-blue-500';
+    if (s.includes('confirmed') || s.includes('designed') || s.includes('printed') || s.includes('packed')) return 'bg-indigo-500';
+    if (s.includes('out for delivery')) return 'bg-purple-500';
+    if (s.includes('cancelled')) return 'bg-rose-500';
+    return 'bg-slate-300';
+  };
+
   const filteredOrders = orders.filter(order => {
     const matchesSearch = 
       order.customer_details?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -92,9 +103,11 @@ const Orders: React.FC = () => {
   return (
     <IonPage className="orders-container">
       <IonHeader className="ion-no-border">
+        <div className="h-4 bg-white" />
         <IonToolbar className="px-2">
-          <IonTitle>Orders</IonTitle>
+          <IonTitle className="font-bold text-xl">Orders</IonTitle>
         </IonToolbar>
+        <div className="h-1 bg-white" />
         <div className="search-wrapper">
           <div className="search-input-container">
             <div className="search-field">
@@ -160,7 +173,7 @@ const Orders: React.FC = () => {
                 onClick={() => history.push(`/orders/${order.id}`)}
               >
                 {/* Color Status Bar */}
-                <div className={`status-indicator ${getStatusColor(order.resolved_status)} !bg-opacity-100`} style={{ backgroundColor: 'currentColor' }} />
+                <div className={`absolute left-0 top-0 bottom-0 w-1 rounded-l-2xl ${getStatusIndicatorColor(order.resolved_status)}`} />
                 
                 <div className="order-card-content">
                   {/* Top Row: Order ID and Status */}

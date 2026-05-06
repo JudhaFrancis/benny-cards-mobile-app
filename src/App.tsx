@@ -23,6 +23,8 @@ import Login from './pages/Login';
 import OrderDetail from './pages/OrderDetail';
 import OrderEdit from './pages/OrderEdit';
 import Profile from './pages/Profile';
+import ManagementEdit from './pages/ManagementEdit';
+import ManagementDetail from './pages/ManagementDetail';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -75,8 +77,14 @@ const App: React.FC = () => {
         <Route exact path="/orders/:id/edit">
           {localStorage.getItem('auth_token') ? <OrderEdit /> : <Redirect to="/login" />}
         </Route>
-        <Route path="/management">
+        <Route exact path="/management">
           {localStorage.getItem('auth_token') ? <Management /> : <Redirect to="/login" />}
+        </Route>
+        <Route exact path="/management/:id/edit">
+          {localStorage.getItem('auth_token') ? <ManagementEdit /> : <Redirect to="/login" />}
+        </Route>
+        <Route exact path="/management/:id">
+          {localStorage.getItem('auth_token') ? <ManagementDetail /> : <Redirect to="/login" />}
         </Route>
         <Route exact path="/profile">
           {localStorage.getItem('auth_token') ? <Profile /> : <Redirect to="/login" />}

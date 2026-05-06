@@ -1,10 +1,15 @@
 /* Login Page Specific Styles */
+* {
+  font-family: 'Poppins', sans-serif !important;
+}
 
 ion-content.login-content {
   --background: #FDFCFB;
+  font-family: 'Poppins', sans-serif !important;
 }
 
 .login-container {
+  font-family: 'Poppins', sans-serif !important;
   display: flex;
   flex-direction: column;
   justify-content: center;

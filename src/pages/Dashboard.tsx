@@ -104,9 +104,11 @@ const Dashboard: React.FC = () => {
   return (
     <IonPage>
       <IonHeader className="ion-no-border">
+        <div className="h-4 bg-white" />
         <IonToolbar className="px-2 relative">
           <IonTitle className="font-bold text-xl">Benny Cards</IonTitle>
         </IonToolbar>
+        <div className="h-1 bg-white" />
       </IonHeader>
 
       <IonContent fullscreen className="ion-padding" style={{ '--background': '#FDFCFB' }}>
@@ -116,7 +118,7 @@ const Dashboard: React.FC = () => {
 
         <div className="space-y-6 pb-8">
           {/* Dashboard Header Section */}
-          <div className="mt-6 flex justify-between items-center relative">
+          <div className="mt-2 flex justify-between items-center relative">
             <div className="flex flex-col justify-center">
               <h2 className="text-3xl font-black text-slate-900 tracking-tight leading-tight">Dashboard</h2>
               <p className="text-sm text-slate-500 font-medium mt-1">Management Overview</p>
