@@ -1,13 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import {
-  IonContent,
-  IonPage,
-  IonLoading,
-} from '@ionic/react';
+import { IonContent,IonPage,IonLoading } from '@ionic/react';
 import { LogIn, Mail, Lock, AlertCircle, ArrowRight } from 'lucide-react';
+import axios from 'axios';
 import api from '../api/api';
 import { BASE_URL } from '../api/config';
-import { useHistory } from 'react-router-dom';
 import './Login.css';
 
 const Login: React.FC = () => {
@@ -17,7 +13,6 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [companyLogo, setCompanyLogo] = useState<string | null>(null);
   const [companyName, setCompanyName] = useState<string | null>(null);
-  const history = useHistory();
 
   const fetchLogo = async () => {
     try {
@@ -56,11 +51,12 @@ const Login: React.FC = () => {
         // Force a full reload to clear any stale Ionic/Tab state
         window.location.href = '/dashboard';
       }
-    } catch (err: any) {
-      if (err.response?.status === 401) {
+    } catch (err: unknown) {
+      if (axios.isAxiosError<{ message?: string }>(err) && err.response?.status === 401) {
         setError('Invalid credentials. Please verify your email and password.');
       } else {
-        setError(err.response?.data?.message || 'Connection lost. Please check your internet and try again.');
+        const message = axios.isAxiosError<{ message?: string }>(err) ? err.response?.data?.message : undefined;
+        setError(message || 'Connection lost. Please check your internet and try again.');
       }
     } finally {
       setLoading(false);
