@@ -12,6 +12,7 @@ export default defineConfig({
     strictPort: true,
     host: true,
   },
+  envPrefix: ['VITE_', 'API_'],
   plugins: [
     tailwindcss(),
     react(),

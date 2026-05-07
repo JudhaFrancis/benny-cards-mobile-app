@@ -6,6 +6,7 @@ import {
 } from '@ionic/react';
 import { LogIn, Mail, Lock, AlertCircle, ArrowRight } from 'lucide-react';
 import api from '../api/api';
+import { BASE_URL } from '../api/config';
 import { useHistory } from 'react-router-dom';
 import './Login.css';
 
@@ -37,7 +38,7 @@ const Login: React.FC = () => {
   const getImageSource = (path: string) => {
     if (!path) return '';
     if (path.startsWith('data:image') || path.startsWith('http')) return path;
-    const baseUrl = import.meta.env.VITE_BACKEND_API_URL;
+    const baseUrl = BASE_URL;
     return `${baseUrl}/${path}`;
   };
 
@@ -47,9 +48,6 @@ const Login: React.FC = () => {
     setError('');
 
     try {
-      const baseUrl = import.meta.env.VITE_BACKEND_API_URL;
-      await api.get(`${baseUrl}/sanctum/csrf-cookie`, { baseURL: '' });
-
       const response = await api.post('/login', { email, password });
 
       if (response.data.success) {
