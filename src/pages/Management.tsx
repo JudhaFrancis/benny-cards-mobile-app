@@ -57,7 +57,7 @@ const Management: React.FC = () => {
     setLoading(true);
     try {
       const response = await api.get(`/orders`, {
-        params: { 
+        params: {
           stage: selectedStage,
           page: page,
           per_page: 20,
@@ -130,8 +130,8 @@ const Management: React.FC = () => {
         dateStr = (order as any).designing?.work_assign?.assigned_date;
         break;
       case 'printing':
-        dateStr = (order as any).printing?.printing_status?.confirmed_date || 
-                  (order as any).printing?.printing_status?.assigned_date;
+        dateStr = (order as any).printing?.printing_status?.confirmed_date ||
+          (order as any).printing?.printing_status?.assigned_date;
         break;
       case 'packaging':
         dateStr = (order as any).packaging?.packaging_logistics?.date;
@@ -160,7 +160,7 @@ const Management: React.FC = () => {
 
   const getPageNumbers = () => {
     const pages: (number | string)[] = [];
-    
+
     if (lastPage <= 5) {
       for (let i = 1; i <= lastPage; i++) pages.push(i);
       return pages;
@@ -184,7 +184,7 @@ const Management: React.FC = () => {
 
     // Always show last page
     pages.push(lastPage);
-    
+
     // Deduplicate while preserving order
     return pages.filter((item, index) => pages.indexOf(item) === index);
   };
@@ -204,8 +204,8 @@ const Management: React.FC = () => {
                 key={stage.id}
                 onClick={() => setSelectedStage(stage.id)}
                 className={`flex flex-col items-center justify-center min-w-[75px] py-3 px-2 rounded-[2.5rem] transition-all duration-500 relative ${selectedStage === stage.id
-                    ? 'bg-white shadow-xl shadow-slate-200/60 scale-105 border border-slate-50'
-                    : 'bg-transparent border border-transparent'
+                  ? 'bg-white shadow-xl shadow-slate-200/60 scale-105 border border-slate-50'
+                  : 'bg-transparent border border-transparent'
                   }`}
               >
                 <div className={`p-3 rounded-[1.25rem] transition-all duration-500 ${selectedStage === stage.id ? stage.color + ' text-white shadow-lg shadow-current/20' : 'bg-slate-50 text-slate-300'
@@ -307,14 +307,14 @@ const Management: React.FC = () => {
           {!loading && lastPage > 1 && (
             <div className="flex justify-end px-4 mt-4 mb-8">
               <div className="flex items-center gap-2">
-                <button 
+                <button
                   disabled={currentPage === 1}
                   onClick={() => fetchOrders(currentPage - 1)}
                   className={`flex items-center justify-center w-7 h-7 rounded-full transition-all ${currentPage === 1 ? 'text-slate-200 bg-transparent' : 'text-[#3cc0c2] bg-white shadow-sm border border-slate-100 active:scale-90'}`}
                 >
                   <ChevronLeft size={14} strokeWidth={3} />
                 </button>
-                
+
                 <div className="flex items-center gap-1">
                   {getPageNumbers().map((p, i) => (
                     <button
@@ -322,7 +322,7 @@ const Management: React.FC = () => {
                       disabled={p === '...'}
                       onClick={() => typeof p === 'number' && fetchOrders(p)}
                       className={`flex items-center justify-center w-7 h-7 rounded-full text-[10px] font-black transition-all duration-300
-                        ${p === currentPage ? 'bg-[#3cc0c2] text-white shadow-md shadow-teal-100 scale-110' : 
+                        ${p === currentPage ? 'bg-[#3cc0c2] text-white shadow-md shadow-teal-100 scale-110' :
                           p === '...' ? 'text-slate-300' : 'text-slate-400 hover:text-slate-700 bg-white shadow-xs border border-slate-50'}`}
                     >
                       {p}
@@ -330,7 +330,7 @@ const Management: React.FC = () => {
                   ))}
                 </div>
 
-                <button 
+                <button
                   disabled={currentPage === lastPage}
                   onClick={() => fetchOrders(currentPage + 1)}
                   className={`flex items-center justify-center w-7 h-7 rounded-full transition-all ${currentPage === lastPage ? 'text-slate-200 bg-transparent' : 'text-[#3cc0c2] bg-white shadow-sm border border-slate-100 active:scale-90'}`}
