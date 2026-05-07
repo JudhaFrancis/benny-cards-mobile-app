@@ -6,6 +6,7 @@ import {
 } from '@ionic/react';
 import { LogIn, Mail, Lock, AlertCircle, ArrowRight } from 'lucide-react';
 import api from '../api/api';
+import { BASE_URL } from '../api/config';
 import { useHistory } from 'react-router-dom';
 import './Login.css';
 
@@ -37,7 +38,7 @@ const Login: React.FC = () => {
   const getImageSource = (path: string) => {
     if (!path) return '';
     if (path.startsWith('data:image') || path.startsWith('http')) return path;
-    const baseUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:8000';
+    const baseUrl = BASE_URL;
     return `${baseUrl}/${path}`;
   };
 
@@ -47,11 +48,8 @@ const Login: React.FC = () => {
     setError('');
 
     try {
-      const baseUrl = import.meta.env.VITE_BACKEND_API_URL || 'http://localhost:8000';
-      await api.get(`${baseUrl}/sanctum/csrf-cookie`, { baseURL: '' });
-      
       const response = await api.post('/login', { email, password });
-      
+
       if (response.data.success) {
         localStorage.setItem('auth_token', response.data.data.token);
         localStorage.setItem('auth_user', JSON.stringify(response.data.data.user));
@@ -73,7 +71,7 @@ const Login: React.FC = () => {
     <IonPage>
       <IonContent fullscreen className="ion-padding login-content">
         <div className="login-container space-y-10 py-12">
-          
+
           {/* Brand Header */}
           <div className="text-center space-y-6">
             <div className="flex flex-col items-center gap-4">
