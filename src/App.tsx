@@ -16,15 +16,15 @@ import {
   layersOutline,
   personOutline
 } from 'ionicons/icons';
-import Dashboard from './pages/Dashboard';
-import Orders from './pages/Orders';
-import Management from './pages/Management';
-import Login from './pages/Login';
-import OrderDetail from './pages/OrderDetail';
-import OrderEdit from './pages/OrderEdit';
-import Profile from './pages/Profile';
-import ManagementEdit from './pages/ManagementEdit';
-import ManagementDetail from './pages/ManagementDetail';
+import Dashboard from './pages/Dashboard/Dashboard';
+import Orders from './pages/Orders/Orders';
+import Management from './pages/Management/Management';
+import Login from './pages/Login/Login';
+import OrderDetail from './pages/Orders/OrderDetail';
+import OrderEdit from './pages/Orders/OrderEdit';
+import Profile from './pages/Profile/Profile';
+import ManagementEdit from './pages/Management/ManagementEdit';
+import ManagementDetail from './pages/Management/ManagementDetail';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';

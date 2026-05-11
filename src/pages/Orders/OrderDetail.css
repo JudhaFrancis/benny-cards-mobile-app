@@ -6,7 +6,10 @@ ion-content {
   --padding-top: 0;
 }
 
-.order-detail-container {
+.order-detail-container, 
+.order-edit-container,
+.management-detail-container,
+.management-edit-container {
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -17,10 +20,10 @@ ion-content {
 /* Header Section */
 .header-hero {
   background: linear-gradient(135deg, #3cc0c2 0%, #29a0a2 100%);
-  padding: 24px 20px 24px 20px;
+  padding: calc(50px + env(safe-area-inset-top)) 20px 24px 20px;
   border-radius: 0 0 30px 30px;
   color: white;
-  margin: -16px -16px 10px -16px;
+  margin: -16px -16px 10px -16px; 
   box-shadow: 0 10px 25px rgba(60, 192, 194, 0.2);
 }
 

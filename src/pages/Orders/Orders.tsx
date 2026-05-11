@@ -19,7 +19,7 @@ import {
 } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
 import { ShoppingBag, Calendar as CalendarIcon, Search, X, ChevronLeft, ChevronRight } from 'lucide-react';
-import api from '../api/api';
+import api from '../../api/api';
 import './Orders.css';
 
 interface Order {
@@ -159,11 +159,11 @@ const Orders: React.FC = () => {
   return (
     <IonPage className="orders-container">
       <IonHeader className="ion-no-border">
-        <div className="h-4 bg-white" />
+        <div className="h-10 bg-white" />
         <IonToolbar className="px-2">
           <IonTitle className="font-bold text-xl">Orders</IonTitle>
         </IonToolbar>
-        <div className="h-1 bg-white" />
+        <div className="h-2 bg-white" />
         <div className="search-wrapper">
           <div className="search-input-container">
             <div className="search-field">
@@ -283,7 +283,7 @@ const Orders: React.FC = () => {
           <IonRefresherContent />
         </IonRefresher>
 
-        <div className="space-y-4 pb-8">
+        <div className="space-y-4 pb-8 mt-2">
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20 space-y-4">
               <IonSpinner name="crescent" className="text-indigo-600" />

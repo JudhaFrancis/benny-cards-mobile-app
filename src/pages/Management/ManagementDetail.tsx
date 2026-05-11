@@ -6,10 +6,10 @@ import {
   IonToast,
 } from '@ionic/react';
 import { useParams, useHistory, useLocation } from 'react-router-dom';
-import { 
-  ChevronLeft, 
-  User, 
-  ClipboardList, 
+import {
+  ChevronLeft,
+  User,
+  ClipboardList,
   Edit2,
   CreditCard,
   Settings,
@@ -49,8 +49,8 @@ import {
   MessageCircle,
   Signature
 } from 'lucide-react';
-import api from '../api/api';
-import './OrderDetail.css'; 
+import api from '../../api/api';
+import '../Orders/OrderDetail.css';
 import './ManagementEdit.css';
 import './ManagementDetail.css';
 
@@ -84,7 +84,7 @@ const ManagementDetail: React.FC = () => {
   const [updating, setUpdating] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-  
+
   // Track status dropdown
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
@@ -112,7 +112,7 @@ const ManagementDetail: React.FC = () => {
       const payload = new FormData();
       payload.append('_method', 'PUT');
       payload.append('status', newStatus);
-      
+
       const response = await api.post(`/orders/${id}/stages/${stage}`, payload);
       if (response.data.success) {
         setToastMessage(`Status updated to ${newStatus}`);
@@ -154,16 +154,16 @@ const ManagementDetail: React.FC = () => {
   return (
     <IonPage className="order-detail-page">
       <IonContent fullscreen>
-        <div className="order-detail-container pb-10">
-          
+        <div className="management-detail-container pb-10">
+
           {/* Header Hero */}
-          <div className="header-hero">
+          <div className="header-hero mt-0">
             <div className="flex justify-between items-center mb-4">
               <button onClick={() => history.goBack()} className="back-btn-float">
                 <ChevronLeft size={24} />
               </button>
-              <button 
-                onClick={() => history.push(`/management/${id}/edit?stage=${stage}`)} 
+              <button
+                onClick={() => history.push(`/management/${id}/edit?stage=${stage}`)}
                 className="header-edit-btn"
               >
                 <Edit2 size={12} />
@@ -200,7 +200,7 @@ const ManagementDetail: React.FC = () => {
 
               {/* Status Dropdown Badge */}
               <div className="relative">
-                <div 
+                <div
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-teal-100 bg-teal-50/30 cursor-pointer transition-all active:scale-95`}
                   onClick={() => setOpenDropdown(openDropdown === 'status' ? null : 'status')}
                 >
@@ -375,7 +375,7 @@ const ManagementDetail: React.FC = () => {
                       { key: 'tag', label: 'Tag' },
                       { key: 'need_pdf', label: 'Need PDF' }
                     ].map(p => (
-                      <div key={p.key} 
+                      <div key={p.key}
                         className={`flex items-center gap-2 py-2.5 px-3 rounded-2xl border text-[10px] font-black uppercase tracking-wider ${order?.designing?.process_status?.[p.key] ? 'bg-teal-500 border-teal-500 text-white shadow-md shadow-teal-100' : 'bg-white border-slate-50 text-slate-300'}`}
                       >
                         {order?.designing?.process_status?.[p.key] && <CheckCircle2 size={12} />}
@@ -451,7 +451,7 @@ const ManagementDetail: React.FC = () => {
                         { key: 'readymade_sub_received', label: 'Card Received' },
                         { key: 'readymade_sent_to_print', label: 'Sent to Print' }
                       ].map(p => (
-                        <div key={p.key} 
+                        <div key={p.key}
                           className={`flex-1 min-w-[100px] flex items-center justify-center py-3.5 px-3 rounded-2xl border text-[11px] font-black uppercase tracking-wider ${order?.printing?.printing_status?.[p.key] ? 'bg-teal-500 border-teal-500 text-white shadow-lg shadow-teal-100' : 'bg-white border-slate-50 text-slate-300'}`}
                         >
                           {p.label}
@@ -578,7 +578,7 @@ const ManagementDetail: React.FC = () => {
 
                 {/* 3. LOGISTICS DETAILS VIEW */}
                 <div className="space-y-4">
-                   <div className="input-group">
+                  <div className="input-group">
                     <label className="input-label">Names</label>
                     <div className="input-field-wrapper readonly"><div className="view-text">{order?.packaging?.packaging_logistics?.names || 'N/A'}</div></div>
                   </div>
@@ -614,7 +614,7 @@ const ManagementDetail: React.FC = () => {
                     ].map(item => {
                       const isSelected = order?.packaging?.packaging_logistics?.selected_items?.includes(item.key);
                       return (
-                        <div key={item.key} 
+                        <div key={item.key}
                           className={`flex flex-col items-center gap-2 p-3 rounded-2xl border transition-all ${isSelected ? 'bg-teal-500 border-teal-500 text-white shadow-lg' : 'bg-white border-slate-50 text-slate-200'}`}
                         >
                           <item.icon size={18} />
@@ -725,7 +725,7 @@ const ManagementDetail: React.FC = () => {
                     </div>
                   )}
 
-                   {order?.dispatch_delivery?.dispatch_mode?.modes === 'Transport' && (
+                  {order?.dispatch_delivery?.dispatch_mode?.modes === 'Transport' && (
                     <div className="space-y-3 pt-2">
                       <div className="input-group">
                         <label className="input-label">Transport Name</label>

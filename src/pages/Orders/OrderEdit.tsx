@@ -17,8 +17,10 @@ import {
   ChevronUp,
   ClipboardList
 } from 'lucide-react';
-import api from '../api/api';
+import api from '../../api/api';
 import './OrderEdit.css';
+import '../Orders/OrderDetail.css'; 
+
 
 interface OrderDetail {
   id: number;
@@ -136,7 +138,7 @@ const OrderEdit: React.FC = () => {
         <div className="order-edit-container pb-20">
 
           {/* Header Section */}
-          <div className="header-hero">
+          <div className="header-hero mt-0">
             <button onClick={() => history.goBack()} className="back-btn-float mb-4">
               <ChevronLeft size={24} />
             </button>

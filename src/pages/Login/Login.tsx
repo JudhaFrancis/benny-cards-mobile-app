@@ -5,8 +5,8 @@ import {
   IonLoading,
 } from '@ionic/react';
 import { LogIn, Mail, Lock, AlertCircle, ArrowRight } from 'lucide-react';
-import api from '../api/api';
-import { BASE_URL } from '../api/config';
+import api from '../../api/api';
+import { BASE_URL } from '../../api/config';
 import { useHistory } from 'react-router-dom';
 import './Login.css';
 

@@ -56,8 +56,8 @@ import {
   Maximize,
   Edit3
 } from 'lucide-react';
-import api from '../api/api';
-import './OrderDetail.css'; 
+import api from '../../api/api';
+import '../Orders/OrderDetail.css'; 
 import './ManagementEdit.css';
 
 interface ManagementOrder {
@@ -416,10 +416,10 @@ const ManagementEdit: React.FC = () => {
   return (
     <IonPage className="order-detail-page">
       <IonContent fullscreen>
-        <div className="order-detail-container pb-10">
+        <div className="management-edit-container pb-10">
           
           {/* Header Hero */}
-          <div className="header-hero">
+          <div className="header-hero mt-0">
             <div className="flex justify-between items-center mb-4">
               <button onClick={() => history.goBack()} className="back-btn-float">
                 <ChevronLeft size={24} />

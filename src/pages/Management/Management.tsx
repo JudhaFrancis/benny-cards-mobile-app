@@ -15,8 +15,8 @@ import {
 } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
 import { Layers, User, Palette, Printer, Box, Truck, ChevronRight, ChevronLeft } from 'lucide-react';
-import api from '../api/api';
-import './Orders.css'; // Reuse the premium card styles
+import api from '../../api/api';
+import '../Orders/Orders.css'; // Reuse the premium card styles
 
 interface Order {
   id: number;
@@ -192,9 +192,9 @@ const Management: React.FC = () => {
   return (
     <IonPage className="orders-container">
       <IonHeader className="ion-no-border">
-        <div className="h-5 bg-white" />
+        <div className="h-10 bg-white" />
         <IonToolbar className="px-2">
-          <IonTitle className="font-bold text-lg">Management</IonTitle>
+          <IonTitle className="font-bold text-xl">Management</IonTitle>
         </IonToolbar>
         <div className="h-2 bg-white" />
         <div className="bg-white px-2 pb-4">
@@ -229,7 +229,7 @@ const Management: React.FC = () => {
           <IonRefresherContent />
         </IonRefresher>
 
-        <div className="space-y-5 pb-8 pt-2">
+        <div className="space-y-4 pb-8 mt-2">
           <div className="flex items-center justify-between px-3">
             <div className="flex items-center gap-3">
               <div className={`w-1 h-6 rounded-full ${currentStage?.color}`} />

@@ -14,7 +14,7 @@ import {
   Edit2, 
   ClipboardList
 } from 'lucide-react';
-import api from '../api/api';
+import api from '../../api/api';
 import './OrderDetail.css';
 
 interface OrderDetail {
@@ -99,7 +99,7 @@ const OrderDetail: React.FC = () => {
         <div className="order-detail-container pb-10">
           
           {/* Header Section */}
-          <div className="header-hero">
+          <div className="header-hero mt-0">
             <div className="flex justify-between items-center mb-4">
               <button onClick={() => history.push('/orders')} className="back-btn-float">
                 <ChevronLeft size={24} />
