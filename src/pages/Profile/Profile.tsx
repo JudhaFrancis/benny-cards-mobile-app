@@ -24,12 +24,20 @@ import {
   Settings
 } from 'lucide-react';
 import api from '../../api/api';
+import { BASE_URL } from '../../api/config';
 import './Profile.css';
 
 const Profile: React.FC = () => {
   const history = useHistory();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+
+  const getImageSource = (path: string) => {
+    if (!path) return '';
+    if (path.startsWith('data:image') || path.startsWith('http')) return path;
+    const baseUrl = BASE_URL;
+    return `${baseUrl}/${path}`;
+  };
 
   useEffect(() => {
     // 1. Immediately check localStorage so the new user name shows up instantly
@@ -86,10 +94,20 @@ const Profile: React.FC = () => {
           {/* Header Hero */}
           <div className="profile-header">
             <div className="avatar-wrapper">
-              <div className="avatar-placeholder">
+              {user?.photo ? (
+                <img 
+                  src={getImageSource(user.photo)} 
+                  alt="Profile" 
+                  className="profile-image"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = 'none';
+                    (e.target as HTMLImageElement).parentElement?.querySelector('.avatar-placeholder')?.setAttribute('style', 'display: flex');
+                  }}
+                />
+              ) : null}
+              <div className="avatar-placeholder" style={{ display: user?.photo ? 'none' : 'flex' }}>
                 {String(user?.name || 'B').charAt(0).toUpperCase()}
               </div>
-              <div className="status-badge"></div>
             </div>
             <h1>{String(user?.name || 'Benny Cards')}</h1>
             <p className="user-role">

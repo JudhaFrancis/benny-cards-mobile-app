@@ -12,6 +12,7 @@ import {
 import { useHistory } from 'react-router-dom';
 import { ShoppingBag, CheckCircle, Clock, IndianRupee, TrendingUp, User, LogOut, Printer, PencilRuler, Box, Truck, Layers } from 'lucide-react';
 import api from '../../api/api';
+import { BASE_URL } from '../../api/config';
 import './Dashboard.css';
 
 interface DashboardStats {
@@ -36,6 +37,13 @@ const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showMenu, setShowMenu] = useState(false);
   const [userData, setUserData] = useState<any>(null);
+
+  const getImageSource = (path: string) => {
+    if (!path) return '';
+    if (path.startsWith('data:image') || path.startsWith('http')) return path;
+    const baseUrl = BASE_URL;
+    return `${baseUrl}/${path}`;
+  };
 
   const fetchStats = async () => {
     try {
@@ -114,9 +122,17 @@ const Dashboard: React.FC = () => {
               style={{ borderRadius: '50%' }}
               className="w-12 h-12 bg-white flex items-center justify-center shadow-xl shadow-teal-100/50 active:scale-95 transition-all overflow-hidden border border-slate-50 cursor-pointer"
             >
-              <div className="w-10 h-10 rounded-full bg-[#3cc0c2] flex items-center justify-center text-white font-black text-lg">
-                <span className="select-none">{userInitial}</span>
-              </div>
+              {userData?.photo ? (
+                <img 
+                  src={getImageSource(userData.photo)} 
+                  alt="Profile" 
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-[#3cc0c2] flex items-center justify-center text-white font-black text-lg">
+                  <span className="select-none">{userInitial}</span>
+                </div>
+              )}
             </button>
           </div>
 
@@ -235,9 +251,17 @@ const Dashboard: React.FC = () => {
               <div className="flex items-center gap-4">
                 <div 
                   style={{ borderRadius: '50%' }}
-                  className="w-12 h-12 bg-[#3cc0c2] flex items-center justify-center text-white font-black text-xl shadow-lg shadow-[#3cc0c2]/20 shrink-0"
+                  className="w-12 h-12 bg-[#3cc0c2] flex items-center justify-center text-white font-black text-xl shadow-lg shadow-[#3cc0c2]/20 shrink-0 overflow-hidden"
                 >
-                  <span className="text-white select-none">{userInitial}</span>
+                  {userData?.photo ? (
+                    <img 
+                      src={getImageSource(userData.photo)} 
+                      alt="Profile" 
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-white select-none">{userInitial}</span>
+                  )}
                 </div>
                 <div className="flex flex-col min-w-0">
                   <span className="text-base font-black text-slate-800 leading-tight truncate">
