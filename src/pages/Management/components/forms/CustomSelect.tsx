@@ -9,6 +9,8 @@ interface Props {
   id: string;
   required?: boolean;
   multiple?: boolean;
+  placeholder?: string;
+  icon?: React.ReactNode;
 }
 
 const CustomSelect: React.FC<Props> = ({ 
@@ -18,10 +20,13 @@ const CustomSelect: React.FC<Props> = ({
   onSelect, 
   id, 
   required = false, 
-  multiple = false 
+  multiple = false,
+  placeholder,
+  icon
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const selectedArray = multiple ? (Array.isArray(value) ? value : []) : [value];
+  const displayPlaceholder = placeholder || `Select ${label}`;
 
   const handleItemSelect = (opt: string) => {
     if (multiple) {
@@ -42,8 +47,9 @@ const CustomSelect: React.FC<Props> = ({
     <div className="input-group relative">
       <label className="input-label">{label}{required && <span className="text-rose-500 ml-1 font-bold">*</span>}</label>
       <div className="custom-dropdown-trigger" onClick={() => setIsOpen(!isOpen)}>
-        <span className="selected-value text-slate-900">
-          {multiple ? (selectedArray.length > 0 ? selectedArray.join(', ') : `Select ${label}`) : (value || `Select ${label}`)}
+        {icon && <div className="mr-3 text-slate-400">{icon}</div>}
+        <span className={`selected-value flex-1 ${!value || (multiple && selectedArray.length === 0) ? 'text-slate-400 font-medium' : 'text-slate-900 font-bold'}`}>
+          {multiple ? (selectedArray.length > 0 ? selectedArray.join(', ') : displayPlaceholder) : (value || displayPlaceholder)}
         </span>
         <div className="dropdown-icon">{isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}</div>
       </div>

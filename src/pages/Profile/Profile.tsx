@@ -24,7 +24,7 @@ import {
   Settings
 } from 'lucide-react';
 import api from '../../api/api';
-import { BASE_URL } from '../../api/config';
+import { BASE_URL, APP_VERSION } from '../../api/config';
 import './Profile.css';
 
 const Profile: React.FC = () => {
@@ -163,7 +163,7 @@ const Profile: React.FC = () => {
                 <LogOut size={20} />
                 Sign Out Account
               </button>
-              <p className="version-text">Version 1.0.4 (Stable)</p>
+              <p className="version-text">Version {APP_VERSION} (Stable)</p>
             </div>
           </div>
 

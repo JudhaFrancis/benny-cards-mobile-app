@@ -136,12 +136,13 @@ const OrderEdit: React.FC = () => {
     <IonPage className="order-edit-page">
       <IonContent fullscreen>
         <div className="order-edit-container pb-20">
-
           {/* Header Section */}
           <div className="header-hero mt-0">
-            <button onClick={() => history.goBack()} className="back-btn-float mb-4">
-              <ChevronLeft size={24} />
-            </button>
+            <div className="flex justify-between items-center mb-4">
+              <button onClick={() => history.goBack()} className="back-btn-float">
+                <ChevronLeft size={24} />
+              </button>
+            </div>
 
             <div className="header-meta">
               <div className="order-title-group">

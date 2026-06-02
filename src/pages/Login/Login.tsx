@@ -6,7 +6,7 @@ import {
 } from '@ionic/react';
 import { LogIn, Mail, Lock, AlertCircle, ArrowRight } from 'lucide-react';
 import api from '../../api/api';
-import { BASE_URL } from '../../api/config';
+import { BASE_URL, APP_VERSION } from '../../api/config';
 import { useHistory } from 'react-router-dom';
 import './Login.css';
 
@@ -15,6 +15,7 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [companyLogo, setCompanyLogo] = useState<string | null>(null);
   const [companyName, setCompanyName] = useState<string | null>(null);
   const history = useHistory();
@@ -48,7 +49,7 @@ const Login: React.FC = () => {
     setError('');
 
     try {
-      const response = await api.post('/login', { email, password });
+      const response = await api.post('/login', { email, password, app_version: APP_VERSION });
 
       if (response.data.success) {
         localStorage.setItem('auth_token', response.data.data.token);
@@ -57,7 +58,9 @@ const Login: React.FC = () => {
         window.location.href = '/dashboard';
       }
     } catch (err: any) {
-      if (err.response?.status === 401) {
+      if (err.response?.data?.update_required) {
+        setShowUpdateModal(true);
+      } else if (err.response?.status === 401) {
         setError('Invalid credentials. Please verify your email and password.');
       } else {
         setError(err.response?.data?.message || 'Connection lost. Please check your internet and try again.');
@@ -149,12 +152,40 @@ const Login: React.FC = () => {
           </form>
 
           {/* Footer */}
-          <div className="pt-8 border-t border-slate-100 text-center">
+          <div className="pt-8 border-t border-slate-100 text-center space-y-1">
             <p className="text-[10px] text-slate-400 font-medium uppercase tracking-widest">
               &copy; 2026 Benny Cards • Management Console
             </p>
+            <p className="text-[10px] text-slate-400 font-bold tracking-widest">
+              v{APP_VERSION}
+            </p>
           </div>
         </div>
+
+        {/* Update Required Modal */}
+        {showUpdateModal && (
+          <div className="update-modal-overlay animate-in fade-in duration-200">
+            <div className="update-modal-card animate-in zoom-in-95 duration-200">
+              <div className="update-modal-icon-container">
+                <AlertCircle size={36} />
+              </div>
+              <h3 className="update-modal-title">Update Required</h3>
+              <p className="update-modal-text">
+                A newer version of the Benny Cards app is available. Please update your application to continue.
+              </p>
+              <button
+                onClick={() => setShowUpdateModal(false)}
+                className="update-modal-btn"
+              >
+                Close
+              </button>
+              <span className="update-modal-footer">
+                Please contact your administrator to get the new APK.
+              </span>
+            </div>
+          </div>
+        )}
+
         <IonLoading isOpen={loading} message="Authenticating..." />
       </IonContent>
     </IonPage>

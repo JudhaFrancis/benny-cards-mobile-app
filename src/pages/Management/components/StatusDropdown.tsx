@@ -23,7 +23,7 @@ const StatusDropdown: React.FC<Props> = ({ status, onStatusChange, updating = fa
         onClick={() => setIsOpen(!isOpen)}
       >
         {updating ? (
-          <IonSpinner name="crescent" size="small" style={{ width: '12px', height: '12px' }} />
+          <IonSpinner name="crescent" style={{ width: '12px', height: '12px' }} />
         ) : (
           <>
             <span className="text-[10px] font-black text-teal-600 uppercase tracking-wider">{status}</span>

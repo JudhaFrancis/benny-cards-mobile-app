@@ -20,11 +20,11 @@ ion-content {
 /* Header Section */
 .header-hero {
   background: linear-gradient(135deg, #3cc0c2 0%, #29a0a2 100%);
-  padding: calc(50px + env(safe-area-inset-top)) 20px 24px 20px;
-  border-radius: 0 0 30px 30px;
+  padding: calc(16px + env(safe-area-inset-top)) 20px 32px 20px;
+  border-radius: 0 0 40px 40px;
   color: white;
   margin: -16px -16px 10px -16px; 
-  box-shadow: 0 10px 25px rgba(60, 192, 194, 0.2);
+  box-shadow: 0 15px 35px rgba(60, 192, 194, 0.25);
 }
 
 .header-meta {
@@ -35,7 +35,7 @@ ion-content {
 
 .order-title-group h1 {
   font-size: 1.2rem;
-  font-weight: 800;
+  font-weight: 900;
   margin: 0;
   letter-spacing: -0.02em;
 }
@@ -60,7 +60,7 @@ ion-content {
 .header-amount-box .label {
   font-size: 0.65rem;
   text-transform: uppercase;
-  font-weight: 800;
+  font-weight: 900;
   opacity: 0.7;
 }
 
@@ -85,7 +85,7 @@ ion-content {
   align-items: center;
   gap: 8px;
   font-size: 0.75rem;
-  font-weight: 800;
+  font-weight: 900;
   color: #94a3b8;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -150,7 +150,7 @@ ion-content {
 
 .input-label {
   font-size: 0.65rem;
-  font-weight: 800;
+  font-weight: 900;
   color: #94a3b8;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -303,7 +303,7 @@ ion-content {
   padding: 4px 10px;
   border-radius: 8px;
   font-size: 0.65rem;
-  font-weight: 800;
+  font-weight: 900;
   text-transform: uppercase;
 }
 
@@ -332,7 +332,7 @@ ion-content {
   background: white;
   color: #3cc0c2;
   font-size: 0.7rem;
-  font-weight: 800;
+  font-weight: 900;
   padding: 8px 16px;
   border-radius: 100px;
   display: flex;
@@ -353,7 +353,7 @@ ion-content {
   width: 100%;
   padding: 14px;
   border-radius: 12px;
-  font-weight: 800;
+  font-weight: 900;
   font-size: 0.9rem;
   display: flex;
   align-items: center;

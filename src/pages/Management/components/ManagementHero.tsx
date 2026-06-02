@@ -14,7 +14,8 @@ const ManagementHero: React.FC<Props> = ({ order, stage, isEdit = false, onEdit 
   const history = useHistory();
 
   return (
-    <div className="header-hero mt-0">
+    <>
+      <div className="header-hero mt-0">
       <div className="flex justify-between items-center mb-4">
         <button onClick={() => history.goBack()} className="back-btn-float">
           <ChevronLeft size={24} />
@@ -40,6 +41,7 @@ const ManagementHero: React.FC<Props> = ({ order, stage, isEdit = false, onEdit 
         </div>
       </div>
     </div>
+    </>
   );
 };
 

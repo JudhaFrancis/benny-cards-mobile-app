@@ -340,7 +340,7 @@ ion-title {
 
 .customer-name {
   font-size: 1rem;
-  font-weight: 800;
+  font-weight: 900;
   color: var(--app-slate-900);
   letter-spacing: -0.01em;
   margin-bottom: 2px;
@@ -353,7 +353,7 @@ ion-title {
 .order-date {
   font-size: 0.625rem;
   font-weight: 700;
-  color: var(--app-slate-400);
+  color: var(--app-slate-600);
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
@@ -367,7 +367,7 @@ ion-title {
 
 .order-amount {
   font-size: 1.35rem;
-  font-weight: 800;
+  font-weight: 900;
   color: var(--app-slate-900);
   line-height: 1;
   letter-spacing: -0.02em;
@@ -375,3 +375,134 @@ ion-title {
 
 
 
+
+/* Premium Date Picker Modal */
+.date-picker-modal::part(content) {
+  --background: transparent;
+  box-shadow: none;
+}
+
+.custom-calendar {
+  --padding-start: 10px;
+  --padding-end: 10px;
+  --padding-top: 0px;
+  --padding-bottom: 0px;
+  border-radius: 1.5rem;
+}
+
+/* Customizing IonDatetime internal parts */
+.custom-calendar::part(calendar-day) {
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  color: #1e293b !important; /* Explicit Dark Color */
+}
+
+.custom-calendar::part(calendar-day-today) {
+  --background: #3cc0c2 !important;
+  background: #3cc0c2 !important;
+  color: #ffffff !important;
+  border-radius: 50% !important;
+  font-weight: 900 !important;
+  opacity: 1 !important;
+}
+
+.custom-calendar::part(calendar-day-active) {
+  --background: #3cc0c2 !important;
+  background: #3cc0c2 !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  border-radius: 50% !important;
+  opacity: 1 !important;
+}
+
+.custom-calendar::part(month-year-button) {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #1e293b !important;
+  background: transparent;
+  padding: 6px 12px;
+  border-radius: 12px;
+  --ion-color-primary: var(--app-teal); /* Arrow next to month ippo teal-ah irukkum */
+}
+
+.custom-calendar::part(button-next),
+.custom-calendar::part(button-prev) {
+  color: var(--app-teal) !important;
+  background-color: transparent;
+  border-radius: 12px;
+  margin: 0 2px;
+  width: 32px;
+  height: 32px;
+}
+
+.custom-calendar::part(button-next):active,
+.custom-calendar::part(button-prev):active {
+  transform: scale(0.9);
+}
+
+/* Global Force for White Background (even in Dark Mode) */
+.custom-calendar, 
+ion-datetime.custom-calendar {
+  --background: #ffffff !important;
+  --ion-background-color: #ffffff !important;
+  --ion-item-background: #ffffff !important;
+  --ion-text-color: #1e293b !important;
+  background: #ffffff !important;
+  color: #1e293b !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .custom-calendar,
+  ion-datetime.custom-calendar {
+    --background: #ffffff !important;
+    --ion-background-color: #ffffff !important;
+    --ion-item-background: #ffffff !important;
+    --ion-text-color: #1e293b !important;
+    background: #ffffff !important;
+    color: #1e293b !important;
+  }
+}
+
+.custom-calendar::part(wheel-picker) {
+  background: white !important;
+}
+
+.custom-calendar::part(wheel-item) {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  color: #1e293b !important; /* Explicit Dark Text */
+  font-size: 14px;
+}
+
+.custom-calendar::part(wheel-item-active) {
+  color: var(--app-teal) !important;
+  font-weight: 800;
+  font-size: 16px;
+}
+
+/* Fix for black gradients on some mobile browsers */
+.custom-calendar::part(picker-column) {
+  background: #ffffff !important;
+  --background: #ffffff !important;
+  mask-image: none !important;
+  -webkit-mask-image: none !important;
+  background-image: none !important;
+}
+
+.custom-calendar::part(picker-highlight) {
+  background: rgba(60, 192, 194, 0.1) !important;
+  border-radius: 12px;
+  border-top: 1px solid rgba(60, 192, 194, 0.2);
+  border-bottom: 1px solid rgba(60, 192, 194, 0.2);
+}
+
+/* Ensure day labels (S M T W T F S) are visible */
+.custom-calendar::part(calendar-day-label) {
+  color: #94a3b8 !important;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 9px;
+}

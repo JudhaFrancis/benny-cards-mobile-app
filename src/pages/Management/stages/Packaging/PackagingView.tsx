@@ -1,6 +1,7 @@
 import React from 'react';
-import { Box, Download, CheckCircle2, Calendar as CalendarIcon, Scissors, User, Mail, Smile, Tag as TagIcon, Gift, Plus } from 'lucide-react';
+import { Box, Download, CheckCircle2, Calendar as CalendarIcon, Scissors, User, Mail, Smile, Tag as TagIcon, Gift, Plus, Clock, Type, Hash } from 'lucide-react';
 import { ManagementOrder } from '../../types';
+import { formatDate } from '../../../../utils/dateUtils';
 
 interface Props {
   order: ManagementOrder | null;
@@ -22,7 +23,7 @@ const PackagingView: React.FC<Props> = ({ order }) => {
             </div>
             {order?.packaging?.packaging_logistics?.card_received && order?.packaging?.packaging_logistics?.card_received_date && (
               <div className="mt-2 text-[10px] font-medium opacity-80 flex items-center gap-1">
-                <CalendarIcon size={10} /> Received on {order.packaging.packaging_logistics.card_received_date}
+                <CalendarIcon size={10} /> Received on {formatDate(order.packaging.packaging_logistics.card_received_date)}
               </div>
             )}
           </div>
@@ -52,31 +53,52 @@ const PackagingView: React.FC<Props> = ({ order }) => {
         </div>
       </div>
 
-      <div className="space-y-4">
-        <div className="input-group">
-          <label className="input-label">Names</label>
-          <div className="input-field-wrapper readonly"><div className="view-text">{order?.packaging?.packaging_logistics?.names || 'N/A'}</div></div>
-        </div>
-        <div className="input-group">
-          <label className="input-label">Date</label>
-          <div className="input-field-wrapper readonly"><div className="view-text">{order?.packaging?.packaging_logistics?.date || 'N/A'}</div></div>
-        </div>
-        <div className="input-group">
-          <label className="input-label">Qty of Cards</label>
-          <div className="input-field-wrapper readonly"><div className="view-text font-bold text-teal-600">{order?.packaging?.packaging_logistics?.qty_cards || (order as any).total_quantity || 'N/A'}</div></div>
-        </div>
-        <div className="input-group">
-          <label className="input-label">Start Time</label>
-          <div className="input-field-wrapper readonly"><div className="view-text">{order?.packaging?.packaging_logistics?.start_time || 'N/A'}</div></div>
-        </div>
-        <div className="input-group">
-          <label className="input-label">End Time</label>
-          <div className="input-field-wrapper readonly"><div className="view-text">{order?.packaging?.packaging_logistics?.end_time || 'N/A'}</div></div>
+      <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-5">
+        <div className="section-title"><Clock size={14} /> Work Details</div>
+        
+        <div className="space-y-4">
+          <div className="input-group">
+            <label className="input-label">Names</label>
+            <div className="input-field-wrapper readonly bg-slate-50/50">
+              <Type size={14} className="text-slate-400 mr-2" />
+              <div className="view-text">{order?.packaging?.packaging_logistics?.names || 'N/A'}</div>
+            </div>
+          </div>
+
+          <div className="input-group">
+            <label className="input-label">Date</label>
+            <div className="input-field-wrapper readonly bg-slate-50/50">
+              <CalendarIcon size={14} className="text-slate-400 mr-2" />
+              <div className="view-text">{formatDate(order?.packaging?.packaging_logistics?.date)}</div>
+            </div>
+          </div>
+          <div className="input-group">
+            <label className="input-label">Packed Qty</label>
+            <div className="input-field-wrapper readonly bg-slate-50/50">
+              <Hash size={14} className="text-slate-400 mr-2" />
+              <div className="view-text font-bold text-teal-600">{order?.packaging?.packaging_logistics?.qty_cards || 'N/A'}</div>
+            </div>
+          </div>
+
+          <div className="input-group">
+            <label className="input-label">Start Time</label>
+            <div className="input-field-wrapper readonly bg-slate-50/50">
+              <Clock size={14} className="text-slate-400 mr-2" />
+              <div className="view-text">{order?.packaging?.packaging_logistics?.start_time || 'N/A'}</div>
+            </div>
+          </div>
+          <div className="input-group">
+            <label className="input-label">End Time</label>
+            <div className="input-field-wrapper readonly bg-slate-50/50">
+              <Clock size={14} className="text-slate-400 mr-2" />
+              <div className="view-text">{order?.packaging?.packaging_logistics?.end_time || 'N/A'}</div>
+            </div>
+          </div>
         </div>
       </div>
 
       <div className="bg-slate-50/50 rounded-3xl p-6 border border-slate-100 space-y-6">
-        <h3 className="section-title"><Box size={14} /> Components</h3>
+        <h3 className="section-title"><Box size={14} /> Selected Components</h3>
         <div className="grid grid-cols-3 gap-3">
           {[
             { key: 'envelope', label: 'Envelope', icon: Mail },
@@ -108,7 +130,7 @@ const PackagingView: React.FC<Props> = ({ order }) => {
       <div className="input-group">
         <label className="input-label">Issues in Card</label>
         <div className="input-field-wrapper readonly" style={{ minHeight: '60px' }}>
-          <div className="view-text italic text-rose-500">{order?.packaging?.packaging_logistics?.card_issues || 'None'}</div>
+          <div className="view-text italic text-rose-500">{order?.packaging?.packaging_logistics?.card_issues || 'No issues found.'}</div>
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import React from 'react';
-import { ClipboardList, User, CreditCard, Sparkles, Plus } from 'lucide-react';
+import { ClipboardList, User, CreditCard, Sparkles, Plus, Brush, Edit3, Box, Smartphone } from 'lucide-react';
 import { ManagementOrder } from '../../types';
+import { formatDate } from '../../../../utils/dateUtils';
 
 interface Props {
   order: ManagementOrder | null;
@@ -20,7 +21,7 @@ const ClientInfoView: React.FC<Props> = ({ order, typeLabels }) => {
           <div className="input-group">
             <label className="input-label">Order Date</label>
             <div className="input-field-wrapper readonly">
-              <div className="view-text">{order?.order_date ? new Date(order.order_date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-') : 'N/A'}</div>
+              <div className="view-text">{formatDate(order?.order_date)}</div>
             </div>
           </div>
           <div className="input-group">
@@ -29,7 +30,7 @@ const ClientInfoView: React.FC<Props> = ({ order, typeLabels }) => {
           </div>
           <div className="input-group">
             <label className="input-label">Delivery Date</label>
-            <div className="input-field-wrapper readonly"><div className="view-text">{order?.client_information?.order_details?.expected_delivery_date || 'N/A'}</div></div>
+            <div className="input-field-wrapper readonly"><div className="view-text">{formatDate(order?.client_information?.order_details?.expected_delivery_date)}</div></div>
           </div>
           <div className="input-group">
             <label className="input-label">Order Placed In</label>
@@ -67,7 +68,13 @@ const ClientInfoView: React.FC<Props> = ({ order, typeLabels }) => {
           </div>
           <div className="input-group">
             <label className="input-label">Occasion</label>
-            <div className="input-field-wrapper readonly"><div className="view-text">{order?.client_information?.client_info?.occasion || 'N/A'}</div></div>
+            <div className="input-field-wrapper readonly">
+              <div className="view-text">
+                {order?.client_information?.client_info?.occasion === 'Other' 
+                  ? order?.client_information?.client_info?.other_occasion || 'Other'
+                  : order?.client_information?.client_info?.occasion || 'N/A'}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -75,14 +82,27 @@ const ClientInfoView: React.FC<Props> = ({ order, typeLabels }) => {
       <div className="mb-8">
         <div className="section-title"><CreditCard size={14} /> Card Specifications</div>
         <div className="space-y-6">
-          <div className="flex flex-wrap gap-2">
-            {order?.client_information?.card_specs?.type?.split(',').filter(Boolean).map((t: string) => (
-              <span key={t} className="type-tag bg-teal-500 text-white border-0">{typeLabels[t] || t}</span>
-            ))}
-            {(!order?.client_information?.card_specs?.type) && <span className="text-[10px] text-slate-400 italic">No product type specified</span>}
-          </div>
-
-          <div className="space-y-4">
+          <div className="space-y-3">
+            <label className="input-label">Product Type</label>
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { id: 'customize', label: 'Customize Card', sub: 'Custom design and printing', icon: Brush },
+                { id: 'ready_made', label: 'Ready Made Card', sub: 'Pre-designed stock items', icon: Box }
+              ].map(type => {
+                const isSelected = order?.client_information?.card_specs?.type?.split(',').includes(type.id);
+                return (
+                  <div key={type.id} className={`relative flex flex-col items-center text-center p-4 rounded-2xl border-2 transition-all ${isSelected ? 'bg-teal-50 border-teal-500 shadow-md' : 'bg-white border-slate-100 opacity-60'}`}>
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-2 ${isSelected ? 'bg-teal-500 text-white' : 'bg-slate-100 text-slate-400'}`}>
+                      <type.icon size={20} />
+                    </div>
+                    <span className={`text-[10px] font-bold ${isSelected ? 'text-teal-900' : 'text-slate-600'}`}>{type.label}</span>
+                    <span className="text-[8px] text-slate-400 mt-0.5">{type.sub}</span>
+                    {isSelected && <div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-teal-500"></div>}
+                  </div>
+                );
+              })}
+            </div>
+          </div>          <div className="space-y-4">
             <div className="input-group">
               <label className="input-label">Card Size</label>
               <div className="input-field-wrapper readonly"><div className="view-text">{order?.client_information?.card_specs?.card_size || 'N/A'}</div></div>
@@ -92,7 +112,7 @@ const ClientInfoView: React.FC<Props> = ({ order, typeLabels }) => {
               <div className="input-field-wrapper readonly"><div className="view-text font-bold text-teal-600">{order?.client_information?.card_specs?.quantity || order?.total_quantity || 'N/A'}</div></div>
             </div>
             <div className="input-group">
-              <label className="input-label">Detailed Specifications</label>
+              <label className="input-label">DETAILED SPECIFICATIONS</label>
               <div className="specs-box">{order?.client_information?.card_specs?.specifications || 'No detailed specifications provided'}</div>
             </div>
           </div>
@@ -103,20 +123,28 @@ const ClientInfoView: React.FC<Props> = ({ order, typeLabels }) => {
             </h4>
             <div className="grid grid-cols-2 gap-4">
               <div className="view-group">
-                <label>Inner GSM</label>
+                <label>INNER GSM</label>
                 <p>{order?.client_information?.card_specs?.inner_gsm || 'N/A'}</p>
               </div>
               <div className="view-group">
-                <label>Env. GSM</label>
+                <label>ENVELOPE GSM</label>
                 <p>{order?.client_information?.card_specs?.envelope_gsm || 'N/A'}</p>
               </div>
               <div className="view-group">
-                <label>Card Lam.</label>
-                <p className="capitalize">{order?.client_information?.card_specs?.card_lamination || 'none'}</p>
+                <label>CARD LAMINATION</label>
+                <p className="capitalize">
+                  {order?.client_information?.card_specs?.card_lamination === 'others'
+                    ? order?.client_information?.card_specs?.other_card_lamination || 'Others'
+                    : order?.client_information?.card_specs?.card_lamination || 'none'}
+                </p>
               </div>
               <div className="view-group">
-                <label>Env. Lam.</label>
-                <p className="capitalize">{order?.client_information?.card_specs?.envelope_lamination || 'none'}</p>
+                <label>ENVELOPE LAMINATION</label>
+                <p className="capitalize">
+                  {order?.client_information?.card_specs?.envelope_lamination === 'others'
+                    ? order?.client_information?.card_specs?.other_envelope_lamination || 'Others'
+                    : order?.client_information?.card_specs?.envelope_lamination || 'none'}
+                </p>
               </div>
             </div>
           </div>
@@ -129,7 +157,11 @@ const ClientInfoView: React.FC<Props> = ({ order, typeLabels }) => {
               {order?.client_information?.card_specs?.card_options?.split(',').filter(Boolean).map((opt: string) => (
                 <div key={opt} className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-100 rounded-full shadow-sm">
                   <div className="w-1.5 h-1.5 rounded-full bg-teal-500"></div>
-                  <span className="text-[10px] font-bold text-slate-700">{opt}</span>
+                  <span className="text-[10px] font-bold text-slate-700">
+                    {opt === 'Others' && order?.client_information?.card_specs?.other_card_options 
+                      ? order?.client_information?.card_specs?.other_card_options 
+                      : opt}
+                  </span>
                 </div>
               ))}
               {(!order?.client_information?.card_specs?.card_options) && <span className="text-[10px] text-slate-400 italic">No additional options selected</span>}

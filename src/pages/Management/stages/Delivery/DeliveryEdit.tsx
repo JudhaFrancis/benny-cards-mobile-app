@@ -1,6 +1,7 @@
 import React from 'react';
 import { IonInput } from '@ionic/react';
-import { Box, Gift, MapPin, Building, Truck, Bus, MessageCircle, FileText, CreditCard, Calendar as CalendarIcon, Clock, Signature } from 'lucide-react';
+import { Box, Gift, MapPin, Building, Truck, Bus, MessageCircle, FileText, CreditCard, Calendar as CalendarIcon, Clock, Signature, Phone, Calendar, Hash, Tag, Layers, Check } from 'lucide-react';
+import { formatDate } from '../../../../utils/dateUtils';
 import CustomSelect from '../../components/forms/CustomSelect';
 
 interface Props {
@@ -13,43 +14,56 @@ const DeliveryEdit: React.FC<Props> = ({ formData, setFormData, staffOptions }) 
   return (
     <div className="space-y-8">
       <div className="bg-slate-50/50 rounded-3xl p-6 border border-slate-100 space-y-6">
-        <h3 className="section-title"><Box size={14} /> Packaging Status</h3>
-        <CustomSelect label="Packed By" id="packed_by" required={true} value={formData.dispatch_mode?.packed_by} options={staffOptions} onSelect={(val: string) => setFormData({...formData, dispatch_mode: {...formData.dispatch_mode, packed_by: val}})} />
+        <h3 className="section-title">Delivery Location</h3>
+        <CustomSelect label="Packed By" id="packed_by" required={true} value={formData.dispatch_mode?.packed_by} options={staffOptions} placeholder="Select staff" onSelect={(val: string) => setFormData({...formData, dispatch_mode: {...formData.dispatch_mode, packed_by: val}})} />
+        
         <div className="space-y-3">
           <label className="input-label">Gift Option<span className="text-rose-500 ml-1 font-bold">*</span></label>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="flex flex-col gap-3">
             {[
               { id: 'with_gift', label: 'With Gift', icon: Gift },
-              { id: 'without_gift', label: 'No Gift', icon: Box }
+              { id: 'without_gift', label: 'Without Gift', icon: Box }
             ].map(gift => {
               const isSelected = formData.dispatch_mode?.gift_type === gift.id;
               return (
                 <div key={gift.id} className={`flex items-center gap-3 p-4 rounded-2xl border-2 transition-all cursor-pointer ${isSelected ? 'bg-teal-50 border-teal-500 text-teal-700' : 'bg-white border-slate-100 text-slate-400'}`} onClick={() => setFormData({...formData, dispatch_mode: {...formData.dispatch_mode, gift_type: gift.id}})}>
                   <gift.icon size={16} />
-                  <span className="text-xs font-bold uppercase">{gift.label}</span>
+                  <span className="text-xs font-bold">{gift.label}</span>
                 </div>
               );
             })}
           </div>
         </div>
-      </div>
 
-      <div className="bg-slate-50/50 rounded-3xl p-6 border border-slate-100 space-y-6">
-        <h3 className="section-title"><MapPin size={14} /> Delivery Location</h3>
-        <div className="space-y-3">
+        <div className="space-y-3 pt-2">
           <label className="input-label">Shop Location<span className="text-rose-500 ml-1 font-bold">*</span></label>
-          <div className="flex gap-3">
-            {['NGL SHOP', 'MTM SHOP'].map(loc => {
-              const isSelected = (formData.delivery_location?.shop_location || 'NGL SHOP') === loc;
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              { id: 'NGL SHOP', icon: Building, label: 'NGL Shop' },
+              { id: 'MTM SHOP', icon: MapPin, label: 'MTM Shop' },
+              { id: 'TVL SHOP', icon: Box, label: 'TVL Shop' },
+              { id: 'CHENNAI SHOP', icon: Building, label: 'Chennai Shop' }
+            ].map(loc => {
+              const isSelected = formData.delivery_location?.shop_location === loc.id;
               return (
-                <div key={loc} className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl border-2 transition-all cursor-pointer ${isSelected ? 'bg-teal-500 border-teal-500 text-white shadow-lg' : 'bg-white border-slate-100 text-slate-400'}`} onClick={() => setFormData({...formData, delivery_location: {...formData.delivery_location, shop_location: loc}})}>
-                  <Building size={14} />
-                  <span className="text-[10px] font-black uppercase">{loc}</span>
+                <div key={loc.id} className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all cursor-pointer ${isSelected ? 'bg-teal-500 border-teal-500 text-white shadow-lg' : 'bg-white border-slate-100 text-slate-400'}`} 
+                  onClick={() => setFormData({
+                    ...formData, 
+                    delivery_location: {
+                      ...formData.delivery_location, 
+                      shop_location: loc.id,
+                      address: loc.label // Auto-fill address with shop name
+                    }
+                  })}
+                >
+                  <loc.icon size={16} />
+                  <span className="text-[9px] font-black tracking-wider">{loc.label}</span>
                 </div>
               );
             })}
           </div>
         </div>
+
         <div className="input-group">
           <label className="input-label">Delivery Address<span className="text-rose-500 ml-1 font-bold">*</span></label>
           <div className="input-field-wrapper bg-white">
@@ -60,89 +74,216 @@ const DeliveryEdit: React.FC<Props> = ({ formData, setFormData, staffOptions }) 
       </div>
 
       <div className="bg-slate-50/50 rounded-3xl p-6 border border-slate-100 space-y-6">
-        <h3 className="section-title"><Truck size={14} /> Mode of Dispatch</h3>
+        <div className="mb-3">
+          <label className="input-label">Mode of Dispatch<span className="text-rose-500 ml-1 font-bold">*</span></label>
+        </div>
         <div className="grid grid-cols-2 gap-3">
           {[
-            { id: 'Bus', icon: Bus },
-            { id: 'Courier', icon: Box },
-            { id: 'Transport', icon: Truck },
-            { id: 'Shop Pickup', icon: Building }
+            { id: 'Shop Pickup', icon: Building, label: 'Shop Pickup' },
+            { id: 'Bus', icon: Bus, label: 'Bus' },
+            { id: 'Transport', icon: Truck, label: 'Transport' },
+            { id: 'Courier', icon: Box, label: 'Courier' }
           ].map(mode => {
             const isSelected = formData.dispatch_mode?.modes === mode.id;
             return (
               <div key={mode.id} className={`flex items-center gap-3 p-4 rounded-2xl border-2 transition-all cursor-pointer ${isSelected ? 'bg-teal-500 border-teal-500 text-white shadow-lg' : 'bg-white border-slate-100 text-slate-400'}`} onClick={() => setFormData({...formData, dispatch_mode: {...formData.dispatch_mode, modes: mode.id}})}>
                 <mode.icon size={16} />
-                <span className="text-[10px] font-black uppercase">{mode.id}</span>
+                <span className="text-[10px] font-black">{mode.label}</span>
               </div>
             );
           })}
         </div>
 
+        <div className="space-y-4 pt-4 border-t border-slate-100">
+          <div className="input-group">
+            <label className="input-label">Dispatch Date<span className="text-rose-500 ml-1 font-bold">*</span></label>
+            <div className="input-field-wrapper relative cursor-pointer group active:bg-slate-50 transition-colors">
+              <Calendar size={16} className="text-slate-400 group-focus-within:text-teal-500" />
+              <div className="view-text flex-1">{formatDate(formData.dispatch_mode?.dispatch_details_date)}</div>
+              <input 
+                type="date" 
+                className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                value={formData.dispatch_mode?.dispatch_details_date || ''} 
+                onChange={e => setFormData({...formData, dispatch_mode: {...formData.dispatch_mode, dispatch_details_date: e.target.value}})} 
+              />
+            </div>
+          </div>
+          <div className="input-group">
+            <label className="input-label">Dispatch Expense (₹)<span className="text-rose-500 ml-1 font-bold">*</span></label>
+            <div className="input-field-wrapper bg-white"><CreditCard size={16} className="text-slate-400" /><IonInput type="number" value={formData.dispatch_mode?.dispatch_expense} placeholder="0" onIonChange={e => setFormData({...formData, dispatch_mode: {...formData.dispatch_mode, dispatch_expense: e.detail.value!}})} className="custom-ion-input font-bold text-rose-500" /></div>
+          </div>
+          <div className="input-group">
+            <label className="input-label">Signature & Name<span className="text-rose-500 ml-1 font-bold">*</span></label>
+            <div className="input-field-wrapper bg-white"><Signature size={16} className="text-slate-400" /><IonInput value={formData.dispatch_mode?.signature_name} placeholder="Enter name" onIonChange={e => setFormData({...formData, dispatch_mode: {...formData.dispatch_mode, signature_name: e.detail.value!}})} className="custom-ion-input" /></div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-slate-50/50 rounded-3xl p-6 border border-slate-100 space-y-6">
+        <h3 className="section-title"><FileText size={14} /> Dispatch Details</h3>
+        
         {formData.dispatch_mode?.modes === 'Bus' && (
-          <div className="space-y-4 pt-4 border-t border-slate-200 animate-in fade-in zoom-in-95">
-            <div className="input-group">
-              <label className="input-label">Bus No<span className="text-rose-500 ml-1 font-bold">*</span></label>
-              <div className="input-field-wrapper bg-white"><IonInput value={formData.dispatch_details?.bus?.bus_no} placeholder="e.g. TN 74 AX 1234" onIonChange={e => setFormData({...formData, dispatch_details: {...formData.dispatch_details, bus: {...formData.dispatch_details.bus, bus_no: e.detail.value!}}})} className="custom-ion-input" /></div>
+          <div className="space-y-4 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center gap-2 p-3 bg-blue-50/50 rounded-2xl border border-blue-100">
+              <Bus size={14} className="text-blue-500" />
+              <span className="text-[10px] font-black text-blue-600">Bus Details</span>
             </div>
-            <div className="input-group">
-              <label className="input-label">Reaching Time</label>
-              <div className="input-field-wrapper bg-white"><Clock size={16} className="text-slate-400" /><IonInput type="time" value={formData.dispatch_details?.bus?.reaching_time} onIonChange={e => setFormData({...formData, dispatch_details: {...formData.dispatch_details, bus: {...formData.dispatch_details.bus, reaching_time: e.detail.value!}}})} className="custom-ion-input" /></div>
+            <div className="grid grid-cols-1 gap-3">
+              <div className="input-group">
+                <label className="input-label">Bus No<span className="text-rose-500 ml-1 font-bold">*</span></label>
+                <div className="input-field-wrapper bg-white"><Hash size={16} className="text-slate-400" /><IonInput value={formData.dispatch_details?.bus?.bus_no} placeholder="Enter bus number" onIonChange={e => setFormData({...formData, dispatch_details: {...formData.dispatch_details, bus: {...formData.dispatch_details.bus, bus_no: e.detail.value!}}})} className="custom-ion-input" /></div>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Reaching Time<span className="text-rose-500 ml-1 font-bold">*</span></label>
+                <div className="input-field-wrapper bg-white p-0 overflow-hidden relative">
+                  <div className="absolute left-3.5 top-1/2 -translate-y-1/2 z-10 pointer-events-none text-slate-400">
+                    <Clock size={16} />
+                  </div>
+                  <IonInput type="time" value={formData.dispatch_details?.bus?.reaching_time} onIonChange={e => setFormData({...formData, dispatch_details: {...formData.dispatch_details, bus: {...formData.dispatch_details.bus, reaching_time: e.detail.value!}}})} className="custom-ion-input pl-10" />
+                </div>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Contact No<span className="text-rose-500 ml-1 font-bold">*</span></label>
+                <div className="input-field-wrapper bg-white"><Phone size={16} className="text-slate-400" /><IonInput type="tel" value={formData.dispatch_details?.bus?.contact_no} placeholder="Enter contact number" onIonChange={e => setFormData({...formData, dispatch_details: {...formData.dispatch_details, bus: {...formData.dispatch_details.bus, contact_no: e.detail.value!}}})} className="custom-ion-input" /></div>
+              </div>
             </div>
-            <div className={`flex items-center gap-3 p-4 rounded-2xl border-2 transition-all cursor-pointer ${formData.dispatch_details?.bus?.shared_whatsapp ? 'bg-green-50 border-green-500 text-green-700' : 'bg-white border-slate-100 text-slate-400'}`} onClick={() => setFormData({...formData, dispatch_details: {...formData.dispatch_details, bus: {...formData.dispatch_details.bus, shared_whatsapp: !formData.dispatch_details.bus.shared_whatsapp}}})}>
-              <MessageCircle size={16} />
-              <span className="text-[10px] font-black uppercase">Shared in WhatsApp</span>
+
+            <div className="input-group pt-2">
+              <div 
+                className={`relative flex items-center gap-3 p-4 rounded-2xl border-2 transition-all cursor-pointer group overflow-hidden ${formData.dispatch_details?.bus?.shared_whatsapp ? 'bg-[#25D366]/5 border-[#25D366] shadow-md' : 'bg-white border-slate-100'}`}
+                onClick={() => setFormData({
+                  ...formData, 
+                  dispatch_details: {
+                    ...formData.dispatch_details, 
+                    bus: {
+                      ...(formData.dispatch_details?.bus || {}), 
+                      shared_whatsapp: !formData.dispatch_details?.bus?.shared_whatsapp
+                    }
+                  }
+                })}
+              >
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors shadow-sm ${formData.dispatch_details?.bus?.shared_whatsapp ? 'bg-[#25D366] text-white' : 'bg-slate-100 text-slate-400'}`}>
+                  <MessageCircle size={20} />
+                </div>
+                <div className="flex-1">
+                  <span className={`block text-[9px] font-black uppercase tracking-[0.15em] mb-0.5 ${formData.dispatch_details?.bus?.shared_whatsapp ? 'text-[#25D366]' : 'text-slate-400'}`}>Notification Status</span>
+                  <span className={`block text-xs font-bold ${formData.dispatch_details?.bus?.shared_whatsapp ? 'text-slate-900' : 'text-slate-600'}`}>Shared in WhatsApp Group</span>
+                </div>
+                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${formData.dispatch_details?.bus?.shared_whatsapp ? 'border-[#25D366] bg-[#25D366] scale-110 shadow-sm' : 'border-slate-200'}`}>
+                  {formData.dispatch_details?.bus?.shared_whatsapp && <Check size={12} className="text-white" />}
+                </div>
+              </div>
             </div>
           </div>
         )}
 
         {formData.dispatch_mode?.modes === 'Courier' && (
-          <div className="space-y-4 pt-4 border-t border-slate-200 animate-in fade-in zoom-in-95">
-            <div className="input-group">
-              <label className="input-label">Courier Name<span className="text-rose-500 ml-1 font-bold">*</span></label>
-              <div className="input-field-wrapper bg-white"><IonInput value={formData.dispatch_details?.courier?.name} placeholder="e.g. Professional Courier" onIonChange={e => setFormData({...formData, dispatch_details: {...formData.dispatch_details, courier: {...formData.dispatch_details.courier, name: e.detail.value!}}})} className="custom-ion-input" /></div>
+          <div className="space-y-4 pt-4 border-t border-slate-100 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center gap-2 p-3 bg-purple-50/50 rounded-2xl border border-purple-100">
+              <Box size={14} className="text-purple-500" />
+              <span className="text-[10px] font-black text-purple-600">Courier Details</span>
             </div>
-            <div className="input-group">
-              <label className="input-label">Tracking No<span className="text-rose-500 ml-1 font-bold">*</span></label>
-              <div className="input-field-wrapper bg-white"><IonInput value={formData.dispatch_details?.courier?.tracking_no} placeholder="Tracking Number" onIonChange={e => setFormData({...formData, dispatch_details: {...formData.dispatch_details, courier: {...formData.dispatch_details.courier, tracking_no: e.detail.value!}}})} className="custom-ion-input" /></div>
+            <div className="grid grid-cols-1 gap-3">
+              <div className="input-group">
+                <label className="input-label">Courier Name<span className="text-rose-500 ml-1 font-bold">*</span></label>
+                <div className="input-field-wrapper bg-white"><Tag size={16} className="text-slate-400" /><IonInput value={formData.dispatch_details?.courier?.name} placeholder="Enter courier service name" onIonChange={e => setFormData({...formData, dispatch_details: {...formData.dispatch_details, courier: {...formData.dispatch_details.courier, name: e.detail.value!}}})} className="custom-ion-input" /></div>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Tracking No<span className="text-rose-500 ml-1 font-bold">*</span></label>
+                <div className="input-field-wrapper bg-white"><Layers size={16} className="text-slate-400" /><IonInput value={formData.dispatch_details?.courier?.tracking_no} placeholder="Enter tracking ID" onIonChange={e => setFormData({...formData, dispatch_details: {...formData.dispatch_details, courier: {...formData.dispatch_details.courier, tracking_no: e.detail.value!}}})} className="custom-ion-input" /></div>
+              </div>
             </div>
-            <div className={`flex items-center gap-3 p-4 rounded-2xl border-2 transition-all cursor-pointer ${formData.dispatch_details?.courier?.shared_whatsapp ? 'bg-green-50 border-green-500 text-green-700' : 'bg-white border-slate-100 text-slate-400'}`} onClick={() => setFormData({...formData, dispatch_details: {...formData.dispatch_details, courier: {...formData.dispatch_details.courier, shared_whatsapp: !formData.dispatch_details.courier.shared_whatsapp}}})}>
-              <MessageCircle size={16} />
-              <span className="text-[10px] font-black uppercase">Shared in WhatsApp</span>
+
+            <div className="input-group pt-2">
+              <div 
+                className={`relative flex items-center gap-3 p-4 rounded-2xl border-2 transition-all cursor-pointer group overflow-hidden ${formData.dispatch_details?.courier?.shared_whatsapp ? 'bg-[#25D366]/5 border-[#25D366] shadow-md' : 'bg-white border-slate-100'}`}
+                onClick={() => setFormData({
+                  ...formData, 
+                  dispatch_details: {
+                    ...formData.dispatch_details, 
+                    courier: {
+                      ...(formData.dispatch_details?.courier || {}), 
+                      shared_whatsapp: !formData.dispatch_details?.courier?.shared_whatsapp
+                    }
+                  }
+                })}
+              >
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors shadow-sm ${formData.dispatch_details?.courier?.shared_whatsapp ? 'bg-[#25D366] text-white' : 'bg-slate-100 text-slate-400'}`}>
+                  <MessageCircle size={20} />
+                </div>
+                <div className="flex-1">
+                  <span className={`block text-[9px] font-black uppercase tracking-[0.15em] mb-0.5 ${formData.dispatch_details?.courier?.shared_whatsapp ? 'text-[#25D366]' : 'text-slate-400'}`}>Notification Status</span>
+                  <span className={`block text-xs font-bold ${formData.dispatch_details?.courier?.shared_whatsapp ? 'text-slate-900' : 'text-slate-600'}`}>Shared in WhatsApp Group</span>
+                </div>
+                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${formData.dispatch_details?.courier?.shared_whatsapp ? 'border-[#25D366] bg-[#25D366] scale-110 shadow-sm' : 'border-slate-200'}`}>
+                  {formData.dispatch_details?.courier?.shared_whatsapp && <Check size={12} className="text-white" />}
+                </div>
+              </div>
             </div>
           </div>
         )}
 
         {formData.dispatch_mode?.modes === 'Transport' && (
-          <div className="space-y-4 pt-4 border-t border-slate-200 animate-in fade-in zoom-in-95">
-            <div className="input-group">
-              <label className="input-label">Transport Name<span className="text-rose-500 ml-1 font-bold">*</span></label>
-              <div className="input-field-wrapper bg-white"><IonInput value={formData.dispatch_details?.transport?.name} placeholder="e.g. VRL Transport" onIonChange={e => setFormData({...formData, dispatch_details: {...formData.dispatch_details, transport: {...formData.dispatch_details.transport, name: e.detail.value!}}})} className="custom-ion-input" /></div>
+          <div className="space-y-4 pt-4 border-t border-slate-100 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center gap-2 p-3 bg-amber-50/50 rounded-2xl border border-amber-100">
+              <Truck size={14} className="text-amber-500" />
+              <span className="text-[10px] font-black text-amber-600">Transport Details</span>
             </div>
-            <div className="input-group">
-              <label className="input-label">LR Number<span className="text-rose-500 ml-1 font-bold">*</span></label>
-              <div className="input-field-wrapper bg-white"><IonInput value={formData.dispatch_details?.transport?.lr_number} placeholder="LR Number" onIonChange={e => setFormData({...formData, dispatch_details: {...formData.dispatch_details, transport: {...formData.dispatch_details.transport, lr_number: e.detail.value!}}})} className="custom-ion-input" /></div>
+            <div className="grid grid-cols-1 gap-3">
+              <div className="input-group">
+                <label className="input-label">Transport Name<span className="text-rose-500 ml-1 font-bold">*</span></label>
+                <div className="input-field-wrapper bg-white"><Building size={16} className="text-slate-400" /><IonInput value={formData.dispatch_details?.transport?.name} placeholder="Enter transport service name" onIonChange={e => setFormData({...formData, dispatch_details: {...formData.dispatch_details, transport: {...formData.dispatch_details.transport, name: e.detail.value!}}})} className="custom-ion-input" /></div>
+              </div>
+              <div className="input-group">
+                <label className="input-label">LR Number<span className="text-rose-500 ml-1 font-bold">*</span></label>
+                <div className="input-field-wrapper bg-white"><FileText size={16} className="text-slate-400" /><IonInput value={formData.dispatch_details?.transport?.lr_number} placeholder="Enter LR number" onIonChange={e => setFormData({...formData, dispatch_details: {...formData.dispatch_details, transport: {...formData.dispatch_details.transport, lr_number: e.detail.value!}}})} className="custom-ion-input" /></div>
+              </div>
             </div>
-            <div className={`flex items-center gap-3 p-4 rounded-2xl border-2 transition-all cursor-pointer ${formData.dispatch_details?.transport?.shared_whatsapp ? 'bg-green-50 border-green-500 text-green-700' : 'bg-white border-slate-100 text-slate-400'}`} onClick={() => setFormData({...formData, dispatch_details: {...formData.dispatch_details, transport: {...formData.dispatch_details.transport, shared_whatsapp: !formData.dispatch_details.transport.shared_whatsapp}}})}>
-              <MessageCircle size={16} />
-              <span className="text-[10px] font-black uppercase">Shared in WhatsApp</span>
+
+            <div className="input-group pt-2">
+              <div 
+                className={`relative flex items-center gap-3 p-4 rounded-2xl border-2 transition-all cursor-pointer group overflow-hidden ${formData.dispatch_details?.transport?.shared_whatsapp ? 'bg-[#25D366]/5 border-[#25D366] shadow-md' : 'bg-white border-slate-100'}`}
+                onClick={() => setFormData({
+                  ...formData, 
+                  dispatch_details: {
+                    ...formData.dispatch_details, 
+                    transport: {
+                      ...(formData.dispatch_details?.transport || {}), 
+                      shared_whatsapp: !formData.dispatch_details?.transport?.shared_whatsapp
+                    }
+                  }
+                })}
+              >
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors shadow-sm ${formData.dispatch_details?.transport?.shared_whatsapp ? 'bg-[#25D366] text-white' : 'bg-slate-100 text-slate-400'}`}>
+                  <MessageCircle size={20} />
+                </div>
+                <div className="flex-1">
+                  <span className={`block text-[9px] font-black uppercase tracking-[0.15em] mb-0.5 ${formData.dispatch_details?.transport?.shared_whatsapp ? 'text-[#25D366]' : 'text-slate-400'}`}>Notification Status</span>
+                  <span className={`block text-xs font-bold ${formData.dispatch_details?.transport?.shared_whatsapp ? 'text-slate-900' : 'text-slate-600'}`}>Shared in WhatsApp Group</span>
+                </div>
+                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${formData.dispatch_details?.transport?.shared_whatsapp ? 'border-[#25D366] bg-[#25D366] scale-110 shadow-sm' : 'border-slate-200'}`}>
+                  {formData.dispatch_details?.transport?.shared_whatsapp && <Check size={12} className="text-white" />}
+                </div>
+              </div>
             </div>
           </div>
         )}
-      </div>
 
-      <div className="space-y-4">
-        <div className="input-group">
-          <label className="input-label">Dispatch Details Date<span className="text-rose-500 ml-1 font-bold">*</span></label>
-          <div className="input-field-wrapper"><CalendarIcon size={16} className="text-slate-400" /><IonInput type="date" value={formData.dispatch_mode?.dispatch_details_date} onIonChange={e => setFormData({...formData, dispatch_mode: {...formData.dispatch_mode, dispatch_details_date: e.detail.value!}})} className="custom-ion-input" /></div>
-        </div>
-        <div className="input-group">
-          <label className="input-label">Dispatch Expense (₹)<span className="text-rose-500 ml-1 font-bold">*</span></label>
-          <div className="input-field-wrapper"><CreditCard size={16} className="text-slate-400" /><IonInput type="number" value={formData.dispatch_mode?.dispatch_expense} placeholder="0" onIonChange={e => setFormData({...formData, dispatch_mode: {...formData.dispatch_mode, dispatch_expense: e.detail.value!}})} className="custom-ion-input font-bold text-rose-500" /></div>
-        </div>
-        <div className="input-group">
-          <label className="input-label">Signature & Name<span className="text-rose-500 ml-1 font-bold">*</span></label>
-          <div className="input-field-wrapper"><Signature size={16} className="text-slate-400" /><IonInput value={formData.dispatch_mode?.signature_name} placeholder="Who received/dispatched?" onIonChange={e => setFormData({...formData, dispatch_mode: {...formData.dispatch_mode, signature_name: e.detail.value!}})} className="custom-ion-input" /></div>
-        </div>
+        {(!formData.dispatch_mode?.modes || formData.dispatch_mode?.modes === 'Shop Pickup') && (
+          <div className="py-12 flex flex-col items-center justify-center gap-3 border-2 border-dashed border-slate-100 rounded-3xl bg-slate-50/30">
+            <div className="p-3 bg-white rounded-full shadow-sm">
+              <Truck size={24} strokeWidth={1.5} className="text-slate-300" />
+            </div>
+            <div className="space-y-1 text-center px-6">
+              <div className="text-sm font-bold text-slate-600">
+                {formData.dispatch_mode?.modes === 'Shop Pickup' ? 'No extra details needed for Shop Pickup' : 'Select a Dispatch Mode First'}
+              </div>
+              <div className="text-[10px] text-slate-400 leading-relaxed">
+                {formData.dispatch_mode?.modes === 'Shop Pickup' ? 'The customer will pick up the order directly from the shop.' : 'Please go to the previous section and select how this order will be dispatched.'}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

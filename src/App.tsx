@@ -10,9 +10,9 @@ import {
   setupIonicReact
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { 
-  gridOutline, 
-  receiptOutline, 
+import {
+  gridOutline,
+  receiptOutline,
   layersOutline,
   personOutline
 } from 'ionicons/icons';
@@ -45,7 +45,7 @@ import '@ionic/react/css/display.css';
 /**
  * Ionic Dark Mode
  */
-import '@ionic/react/css/palettes/dark.system.css';
+// import '@ionic/react/css/palettes/dark.system.css';
 
 /* Theme variables */
 import './theme/variables.css';
@@ -93,7 +93,7 @@ const App: React.FC = () => {
           <Redirect to="/dashboard" />
         </Route>
       </IonRouterOutlet>
-      
+
       {showTabs && (
         <IonTabBar slot="bottom">
           <IonTabButton tab="dashboard" href="/dashboard">

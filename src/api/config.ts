@@ -3,3 +3,4 @@ const api_url = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api/v1')
 export const API_BASE = api_url;
 export const API_URL = api_url;
 export const BASE_URL = api_url ? api_url.replace(/\/api\/v1\/?$/, '') : '';
+export const APP_VERSION = '1.0.6';

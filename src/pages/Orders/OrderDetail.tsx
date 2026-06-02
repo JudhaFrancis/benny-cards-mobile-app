@@ -97,7 +97,6 @@ const OrderDetail: React.FC = () => {
     <IonPage className="order-detail-page">
       <IonContent fullscreen>
         <div className="order-detail-container pb-10">
-          
           {/* Header Section */}
           <div className="header-hero mt-0">
             <div className="flex justify-between items-center mb-4">

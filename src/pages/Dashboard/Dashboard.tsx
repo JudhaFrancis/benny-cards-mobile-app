@@ -90,11 +90,9 @@ const Dashboard: React.FC = () => {
   return (
     <IonPage>
       <IonHeader className="ion-no-border">
-        <div className="h-10 bg-white" />
-        <IonToolbar className="px-2">
-          <IonTitle className="font-bold text-xl">Benny Cards</IonTitle>
+        <IonToolbar className="px-2 pb-1 pt-1">
+          <IonTitle className="font-bold text-xl ion-text-center">Benny Cards</IonTitle>
         </IonToolbar>
-        <div className="h-2 bg-white" />
       </IonHeader>
 
       <IonContent fullscreen className="ion-padding" style={{ '--background': '#FDFCFB' }}>
@@ -102,7 +100,7 @@ const Dashboard: React.FC = () => {
           <IonRefresherContent />
         </IonRefresher>
 
-        <div className="space-y-7 pb-8">
+        <div className="space-y-6 pb-8">
           {/* Dashboard Header Section - Premium Stitch Design */}
           <div className="mt-2 flex justify-between items-center px-1">
             <div className="flex flex-col">

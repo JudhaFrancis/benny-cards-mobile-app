@@ -89,10 +89,10 @@ const ManagementDetail: React.FC = () => {
 
   const status = getStageStatus(order, stage);
   const typeLabels: Record<string, string> = {
-    customize: 'Customize Card',
-    semi_customize: 'Semi – Customize Card',
-    ready_made: 'Ready Made Card',
-    digital_local: 'Digital Local'
+    customize: 'Customize Card Status',
+    semi_customize: 'Semi – Customize Card Status',
+    ready_made: 'Ready Made Card Status',
+    digital_local: 'Digital Local Status'
   };
 
   const renderStageContent = () => {

@@ -44,7 +44,7 @@ const ManagementEdit: React.FC = () => {
       setLoading(true);
       const [orderRes, staffRes] = await Promise.all([
         api.get(`/orders/${id}`),
-        api.get('/staff-list')
+        api.get('/users?per_page=100')
       ]);
 
       if (orderRes.data.success) {
@@ -54,7 +54,12 @@ const ManagementEdit: React.FC = () => {
       }
 
       if (staffRes.data.success) {
-        setStaffOptions(staffRes.data.data.map((s: any) => s.name));
+        const staffData = staffRes.data.data.data || staffRes.data.data;
+        setStaffOptions(
+          staffData
+            .filter((user: any) => user.role?.name?.toLowerCase() !== 'user' && user.name && user.name.trim() !== '')
+            .map((s: any) => s.name)
+        );
       }
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -67,7 +72,11 @@ const ManagementEdit: React.FC = () => {
     switch (currentStage) {
       case 'client-information':
         setFormData({
-          order_details: order.client_information?.order_details || {},
+          order_details: {
+            ...(order.client_information?.order_details || {}),
+            order_date: (order.client_information?.order_details?.order_date || order.order_date || '').split('T')[0],
+            expected_delivery_date: (order.client_information?.order_details?.expected_delivery_date || order.expected_delivery_date || '').split('T')[0]
+          },
           client_info: order.client_information?.client_info || order.customer_details || {},
           card_specs: order.client_information?.card_specs || {},
           status: order.client_information?.status || 'Pending'
@@ -91,15 +100,62 @@ const ManagementEdit: React.FC = () => {
   const handleSave = async () => {
     try {
       setSaving(true);
-      const response = await api.put(`/orders/${id}/stages/${stage}`, formData);
+      
+      let payload: any = formData;
+      let isMultipart = false;
+      let method = 'put';
+      let url = `/orders/${id}/stages/${stage}`;
+
+      if (formData.design_print_file) {
+        isMultipart = true;
+        method = 'post'; // Laravel needs POST + _method=PUT for multipart
+        const fd = new FormData();
+        fd.append('_method', 'PUT');
+
+        const appendObject = (obj: any, prefix = '') => {
+          for (const key in obj) {
+            if (key === 'design_print_file') continue;
+            
+            const val = obj[key];
+            const newKey = prefix ? `${prefix}[${key}]` : key;
+            
+            if (val === null || val === undefined) {
+              // skip
+            } else if (typeof val === 'object' && !(val instanceof File) && !Array.isArray(val)) {
+              appendObject(val, newKey);
+            } else if (Array.isArray(val)) {
+              val.forEach((item, index) => {
+                fd.append(`${newKey}[]`, item);
+              });
+            } else {
+              fd.append(newKey, val as string);
+            }
+          }
+        };
+
+        appendObject(formData);
+        fd.append('sticker_image', formData.design_print_file);
+        payload = fd;
+      }
+
+      const response = await (isMultipart 
+        ? api.post(url, payload, { headers: { 'Content-Type': 'multipart/form-data' } })
+        : api.put(url, payload));
+
       if (response.data.success) {
         setToastMessage('Changes saved successfully!');
         setShowToast(true);
         setTimeout(() => history.push(`/management/${id}?stage=${stage}`), 1000);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving:', error);
-      setToastMessage('Failed to save changes');
+      if (error.response?.data?.errors) {
+        const errors = error.response.data.errors;
+        const firstErrorKey = Object.keys(errors)[0];
+        setToastMessage(errors[firstErrorKey][0]);
+      } else {
+        setToastMessage(error.response?.data?.message || 'Failed to save changes');
+      }
       setShowToast(true);
     } finally {
       setSaving(false);
@@ -162,7 +218,7 @@ const ManagementEdit: React.FC = () => {
             className={`save-btn ${saving ? 'opacity-70 pointer-events-none' : ''}`} 
             onClick={handleSave}
           >
-            {saving ? <IonSpinner name="crescent" size="small" /> : <><Save size={18} /> SAVE CHANGES</>}
+            {saving ? <IonSpinner name="crescent" /> : <><Save size={18} /> SAVE CHANGES</>}
           </button>
         </div>
       </IonContent>

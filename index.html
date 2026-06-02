@@ -10,13 +10,51 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
-    <meta name="color-scheme" content="light dark" />
+    <meta name="color-scheme" content="light" />
     <meta
       name="viewport"
       content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
     <meta name="format-detection" content="telephone=no" />
     <meta name="msapplication-tap-highlight" content="no" />
+    
+    <style>
+      :root {
+        --ion-background-color: #ffffff !important;
+        --ion-text-color: #1e293b !important;
+        --ion-color-primary: #3cc0c2 !important;
+        --ion-color-primary-rgb: 60, 192, 194 !important;
+      }
+      
+      ion-datetime, .custom-calendar {
+        --background: #ffffff !important;
+      }
+
+      /* Force Shadow Part Highlights */
+      ion-datetime::part(button-next),
+      ion-datetime::part(button-prev),
+      ion-datetime::part(calendar-day-active),
+      ion-datetime::part(calendar-day-today),
+      ion-datetime::part(month-year-button) {
+        color: #3cc0c2 !important;
+        --color: #3cc0c2 !important;
+      }
+
+      ion-datetime::part(calendar-day-active) {
+        background: #3cc0c2 !important;
+        --background: #3cc0c2 !important;
+        color: #ffffff !important;
+        border-radius: 50% !important;
+        border: none !important;
+        opacity: 1 !important;
+      }
+      
+      ion-datetime::part(calendar-day-today) {
+        color: #3cc0c2 !important;
+        border: 1px solid #3cc0c2 !important;
+        border-radius: 50% !important;
+      }
+    </style>
     
     <link rel="manifest" href="/manifest.json" />
     
